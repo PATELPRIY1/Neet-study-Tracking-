@@ -1,0 +1,54 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap");
+@import "tailwindcss";
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: url(./assets/bg-jellyfish.png);
+  color: var(--primary-color);
+  font-family: "Lato", sans-serif;
+}
+
+:root {
+  --primary-color: #cee7ff;
+  --secondary-color: #e9f5ff;
+  --accent-color: #003eb3;
+  --bg-transparent-color: #e9f5ff10;
+  --bg-transparent-2-color: #e9f5ff20;
+}
+
+img {
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.content-wrapper > div:not(:last-child) {
+  flex: 1;
+}

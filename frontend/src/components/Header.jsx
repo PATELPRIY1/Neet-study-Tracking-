@@ -1,0 +1,71 @@
+import { Logout } from "@mui/icons-material";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+const Header = () => {
+  const [dayTasks, setDayTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const dayTaskRes = await axios.get(
+          "http://localhost:3000/api/getdaytasks",
+          {
+            withCredentials: true,
+          },
+        );
+
+        const responseData = dayTaskRes?.data || [];
+        const fetchedDayTasks = Array.isArray(responseData)
+          ? responseData
+          : Array.isArray(responseData.daytasks)
+            ? responseData.daytasks
+            : [];
+
+        setDayTasks(fetchedDayTasks);
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+        setDayTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const totalDayTasks = dayTasks.length;
+
+  const completedDayTasks = dayTasks.filter(
+    (task) => task.done === "completed",
+  ).length;
+
+  const handleLogout = () => {
+    axios
+      .post(
+        "http://localhost:3000/api/auth/logout",
+        {},
+        { withCredentials: true },
+      )
+      .then(() => {
+        window.location.href = "/login";
+      });
+  };
+  return (
+    <header className="bg-(--bg-transparent-color) py-4 px-8  flex justify-between items-center backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)]">
+      <h1 className="text-2xl font-bold">Neet Test Tracking</h1>
+      <div className="flex items-center gap-4">
+        <h4>
+          {completedDayTasks}/{totalDayTasks}
+        </h4>
+        <span className="text-lg font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors">
+          <Logout onClick={handleLogout} />
+        </span>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
