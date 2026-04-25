@@ -9,6 +9,11 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    axios.get(`${VITE_API_URL}/api/auth/user`, {
+      withCredentials: true,
+    }).catch((err) => {
+      console.error("Error fetching user data:", err);
+    });
     const fetchData = async () => {
       try {
         const [taskRes, dayTaskRes] = await Promise.all([
