@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { Delete, EditSquare } from "@mui/icons-material";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
 import api from "../api/axios";
 
 function ViewTask() {
@@ -17,7 +16,7 @@ function ViewTask() {
 
   useEffect(() => {
     api
-      .get(`${VITE_API_URL}/api/get-task`)
+      .get("/api/get-task")
       .then((res) => {
         setTask(res.data.tasks);
         setLoading(false); // ✅ correct place
@@ -58,7 +57,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await api.delete(`${VITE_API_URL}/api/delete-task/${taskId}`);
+        await api.delete(`/api/delete-task/${taskId}`);
         setTask((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
         Swal.fire("Deleted!", "Your task has been deleted.", "success");
       } catch (err) {
@@ -81,7 +80,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await api.delete(`${VITE_API_URL}/api/delete-all-tasks`);
+        await api.delete("/api/delete-all-tasks");
         setTask([]);
         Swal.fire("Deleted!", "All your tasks have been deleted.", "success");
       } catch (err) {
@@ -111,7 +110,7 @@ function ViewTask() {
 
       try {
         await api.put(
-          `${VITE_API_URL}/api/update-task-status/${taskId}/status`,
+          `/api/update-task-status/${taskId}/status`,
           {
             status: newStatus,
           }

@@ -2,7 +2,6 @@ import axios from "axios";
 import React from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
 import api from "../api/axios";
 
 const Registration = () => {
@@ -23,7 +22,7 @@ const Registration = () => {
       return;
     }
     api
-      .post(`${VITE_API_URL}/api/auth/register`, userData)
+      .post("/api/auth/register", userData)
       .then((res) => {
         Swal.fire({
           icon: "success",

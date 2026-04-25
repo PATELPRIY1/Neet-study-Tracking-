@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Bounce, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
 import api from "../api/axios";
 
 const UpdateDayTask = () => {
@@ -22,7 +21,7 @@ const UpdateDayTask = () => {
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const response = await api.get(`${VITE_API_URL}/api/getdaytasks`);
+        const response = await api.get("/api/getdaytasks");
 
         const tasks = Array.isArray(response.data) ? response.data : [];
         const task = tasks.find((t) => t._id === id);
@@ -64,7 +63,7 @@ const UpdateDayTask = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.put(`${VITE_API_URL}/api/updatetask/${id}`, formData);
+      await api.put(`/api/updatetask/${id}`, formData);
       Swal.fire("Success!", "Day task updated successfully.", "success");
       navigate("/view-day-by-task");
     } catch (error) {

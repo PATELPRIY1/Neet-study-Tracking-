@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
 import api from "../api/axios"; 
 
 const UpdateTask = () => {
@@ -13,8 +12,8 @@ const UpdateTask = () => {
   const [topic, setTopic] = useState("");
 
   useEffect(() => {
-    axios
-      .get(`${VITE_API_URL}/api/get-task-by/${taskId}`, {
+    api
+      .get(`/api/get-task-by/${taskId}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -57,7 +56,7 @@ const UpdateTask = () => {
         }
 
         await api.put(
-          `${VITE_API_URL}/api/update-task/${taskId}`,
+          `/api/update-task/${taskId}`,
           taskData,
           {
             withCredentials: true,

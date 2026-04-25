@@ -5,7 +5,7 @@ import { Delete, EditSquare } from "@mui/icons-material";
 import { Bounce, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
 import api from "../api/axios";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
+
 
 const ViewDayByTask = () => {
   const [task, setTask] = useState([]);
@@ -15,7 +15,7 @@ const ViewDayByTask = () => {
 
   useEffect(() => {
     api
-      .get(`${VITE_API_URL}/api/getdaytasks`)
+      .get("/api/getdaytasks")
       .then((res) => {
         const data = res.data;
         const processedData = Array.isArray(data)
@@ -69,7 +69,7 @@ const ViewDayByTask = () => {
     });
     if (result.isConfirmed) {
       try {
-        await api.delete(`${VITE_API_URL}/api/deletetask/${taskId}`);
+        await api.delete(`/api/deletetask/${taskId}`);
         setTask((prevTasks) => prevTasks.filter((t) => t._id !== taskId));
         Swal.fire("Deleted!", "Your task has been deleted.", "success");
       } catch (err) {
@@ -91,7 +91,7 @@ const ViewDayByTask = () => {
     });
     if (result.isConfirmed) {
       try {
-        await api.delete(`${VITE_API_URL}/api/deletealltasks`);
+        await api.delete("/api/deletealltasks");
         setTask([]);
         Swal.fire("Deleted!", "All tasks have been deleted.", "success");
       } catch (err) {
@@ -115,7 +115,7 @@ const ViewDayByTask = () => {
     const newStatus = currentStatus === "completed" ? "pending" : "completed";
     try {
       await api.put(
-        `${VITE_API_URL}/api/updatetaskstatus/${taskId}/done`,
+        `/api/updatetaskstatus/${taskId}/done`,
         {
           done: newStatus,
         },
