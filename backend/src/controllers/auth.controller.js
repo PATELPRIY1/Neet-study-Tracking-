@@ -23,7 +23,12 @@ const register = async (req, res) => {
     process.env.JWT_SECRET,
   );
 
-  res.cookie("token", token);
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    path: "/",
+  });
 
   res.status(201).json({
     message: "User registered successfully",
@@ -56,7 +61,7 @@ const loginUser = async (req, res) => {
     { id: user._id, role: user.role },
     process.env.JWT_SECRET,
   );
-  
+
   res.cookie("token", token, {
     httpOnly: true,
     secure: true,
@@ -84,8 +89,13 @@ const getMe = async (req, res) => {
 };
 
 const logoutUser = async (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    path: "/",
+  });
   res.status(200).json({ message: "User logged out successfully" });
 };
 
-module.exports = { register, loginUser, logoutUser, getUser, getMe, };
+module.exports = { register, loginUser, logoutUser, getUser, getMe };

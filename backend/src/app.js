@@ -8,8 +8,7 @@ const cors = require("cors");
 const app = express();
 app.use(
   cors({
-    origin: ["https://neet-study-tracking-204o.onrender.com",
-    "http://localhost:5173"],
+    origin: "https://neet-study-tracking-204o.onrender.com",
     credentials: true,
   }), 
 );
