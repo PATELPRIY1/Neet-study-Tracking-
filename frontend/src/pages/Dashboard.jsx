@@ -2,49 +2,59 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import IndexLineChart from "../components/LineChart";
 const VITE_API_URL = import.meta.env.VITE_API_URL;
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [dayTasks, setDayTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`${VITE_API_URL}/api/auth/user`, {
-      withCredentials: true,
-    }).catch((err) => {
-      console.error("Error fetching user data:", err);
-    });
-    const fetchData = async () => {
-      try {
-        const [taskRes, dayTaskRes] = await Promise.all([
-          axios.get(`${VITE_API_URL}/api/get-task`, {
-            withCredentials: true,
-          }),
-          axios.get(`${VITE_API_URL}/api/getdaytasks`, {
-            withCredentials: true,
-          }),
-        ]);
+  const checkAuthAndFetch = async () => {
+    try {
+      // ✅ Step 1: Check if user is logged in
+      const userRes = await axios.get(
+        `${VITE_API_URL}/api/auth/user`,
+        { withCredentials: true }
+      );
 
-        const fetchedTasks = Array.isArray(taskRes.data.tasks)
-          ? taskRes.data.tasks
-          : [];
-        const fetchedDayTasks = Array.isArray(dayTaskRes.data)
-          ? dayTaskRes.data
-          : Array.isArray(dayTaskRes.data.daytasks)
-            ? dayTaskRes.data.daytasks
-            : [];
+      console.log("User:", userRes.data);
 
-        setTasks(fetchedTasks);
-        setDayTasks(fetchedDayTasks);
-      } catch (error) {
-        console.error("Error loading dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // ✅ Step 2: If success → fetch dashboard data
+      const [taskRes, dayTaskRes] = await Promise.all([
+        axios.get(`${VITE_API_URL}/api/get-task`, {
+          withCredentials: true,
+        }),
+        axios.get(`${VITE_API_URL}/api/getdaytasks`, {
+          withCredentials: true,
+        }),
+      ]);
 
-    fetchData();
-  }, []);
+      const fetchedTasks = Array.isArray(taskRes.data.tasks)
+        ? taskRes.data.tasks
+        : [];
+
+      const fetchedDayTasks = Array.isArray(dayTaskRes.data)
+        ? dayTaskRes.data
+        : Array.isArray(dayTaskRes.data.daytasks)
+        ? dayTaskRes.data.daytasks
+        : [];
+
+      setTasks(fetchedTasks);
+      setDayTasks(fetchedDayTasks);
+    } catch (error) {
+      console.error("Auth or data error:", error);
+
+      // ❗ IMPORTANT: redirect if unauthorized
+      navigate("/login");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  checkAuthAndFetch();
+}, []);
 
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(
