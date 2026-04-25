@@ -2,8 +2,7 @@ import React from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
-require("dotenv").config();
-const { VITE_API_URL } = process.env;
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate();

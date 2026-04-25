@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 import { Delete, EditSquare } from "@mui/icons-material";
 import { Bounce, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
-require("dotenv").config();
-const { VITE_API_URL } = process.env;
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const ViewDayByTask = () => {
   const [task, setTask] = useState([]);

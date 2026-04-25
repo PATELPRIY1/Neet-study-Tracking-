@@ -3,8 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
-require("dotenv").config();
-const { VITE_API_URL } = process.env;
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 
 const AddDayTask = () => {

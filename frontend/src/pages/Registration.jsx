@@ -2,8 +2,7 @@ import axios from "axios";
 import React from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-require("dotenv").config();
-const { VITE_API_URL } = process.env;
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const Registration = () => {
   const handleSubmit = (e) => {

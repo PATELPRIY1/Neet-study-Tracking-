@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import IndexLineChart from "../components/LineChart";
-require ("dotenv").config();
-const { VITE_API_URL } = process.env;
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
