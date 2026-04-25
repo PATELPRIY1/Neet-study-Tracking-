@@ -23,7 +23,7 @@ const Login = () => {
       return;
     }
     axios
-      .post(`${VITE_API_URL}/api/auth/login`, loginData, {
+      .post("https://neet-study-tracking.onrender.com/api/auth/login", loginData, {
         withCredentials: true,
       })
       .then((res) => {
