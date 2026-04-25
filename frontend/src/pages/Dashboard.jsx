@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import IndexLineChart from "../components/LineChart";
 const VITE_API_URL = import.meta.env.VITE_API_URL;
+import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
@@ -14,21 +15,14 @@ const Dashboard = () => {
   const checkAuthAndFetch = async () => {
     try {
       // ✅ Step 1: Check if user is logged in
-      const userRes = await axios.get(
-        `${VITE_API_URL}/api/auth/user`,
-        { withCredentials: true }
-      );
+      const userRes = await api.get(`${VITE_API_URL}/api/auth/user`);
 
       console.log("User:", userRes.data);
 
       // ✅ Step 2: If success → fetch dashboard data
       const [taskRes, dayTaskRes] = await Promise.all([
-        axios.get(`${VITE_API_URL}/api/get-task`, {
-          withCredentials: true,
-        }),
-        axios.get(`${VITE_API_URL}/api/getdaytasks`, {
-          withCredentials: true,
-        }),
+        api.get(`${VITE_API_URL}/api/get-task`),
+        api.get(`${VITE_API_URL}/api/getdaytasks`),
       ]);
 
       const fetchedTasks = Array.isArray(taskRes.data.tasks)

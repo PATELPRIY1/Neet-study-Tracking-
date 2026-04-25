@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
 const VITE_API_URL = import.meta.env.VITE_API_URL;
+import api from "../api/axios";
 
 
 const AddDayTask = () => {
@@ -41,9 +42,7 @@ const AddDayTask = () => {
         return;
       }
 
-      await axios.post(`${VITE_API_URL}/api/createtask`, formData, {
-        withCredentials: true,
-      });
+      await api.post(`${VITE_API_URL}/api/createtask`, formData);
 
       toast.success("Day task created successfully!", {
         position: "top-right",
