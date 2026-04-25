@@ -2,6 +2,7 @@ import React from "react";
 import { AddTask, DashboardCustomize, TaskAlt } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import axios from "axios";
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const Sidebar = () => {
   const [user, setUser] = React.useState(null);
@@ -9,7 +10,7 @@ const Sidebar = () => {
 
   async function fetchUser() {
     try {
-      const userRes = await axios.get("http://localhost:3000/api/auth/user", {
+      const userRes = await axios.get(`${VITE_API_URL}/api/auth/user`, {
         withCredentials: true,
       });
       setUser(userRes.data.User);

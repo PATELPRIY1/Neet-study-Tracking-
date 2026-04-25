@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { useEffect, useState } from "react";
 import axios from "axios";
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const prepareChartData = (tasks) => {
   let completed = 0;
@@ -36,7 +37,7 @@ export default function IndexLineChart() {
     const fetchDayTasks = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/getdaytasks",
+          `${VITE_API_URL}/api/getdaytasks`,
           { withCredentials: true },
         );
         setDayTasks(response.data);

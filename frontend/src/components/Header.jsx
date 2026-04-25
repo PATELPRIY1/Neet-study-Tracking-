@@ -2,6 +2,8 @@ import { Logout } from "@mui/icons-material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 const Header = () => {
   const [dayTasks, setDayTasks] = useState([]);
@@ -11,7 +13,7 @@ const Header = () => {
     const fetchData = async () => {
       try {
         const dayTaskRes = await axios.get(
-          "http://localhost:3000/api/getdaytasks",
+          `${VITE_API_URL}/api/getdaytasks`,
           {
             withCredentials: true,
           },
@@ -45,7 +47,7 @@ const Header = () => {
   const handleLogout = () => {
     axios
       .post(
-        "http://localhost:3000/api/auth/logout",
+        `${VITE_API_URL}/api/auth/logout`,
         {},
         { withCredentials: true },
       )
