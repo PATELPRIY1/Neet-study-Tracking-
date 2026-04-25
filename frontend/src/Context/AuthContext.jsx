@@ -1,9 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 export const AuthContext = createContext();
-
-const API = import.meta.env.VITE_API_URL;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -11,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const res = await axios.get(`${API}/api/auth/me`, {
+      const res = await axios.get(`${VITE_API_URL}/api/auth/me`, {
         withCredentials: true,
       });
       setUser(res.data.user);
