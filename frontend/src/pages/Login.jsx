@@ -9,6 +9,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("API URL:", import.meta.env.VITE_API_URL);
     const formData = new FormData(e.target);
     const loginData = {
       username: formData.get("username"),
