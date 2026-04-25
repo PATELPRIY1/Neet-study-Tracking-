@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
+require("dotenv").config();
+const { VITE_API_URL } = process.env;
 
 const AddTask = () => {
   const navigate = useNavigate();
@@ -25,7 +27,7 @@ const AddTask = () => {
     }
 
     axios
-      .post("http://localhost:3000/api/create-task", taskData, {
+      .post(`${VITE_API_URL}/api/create-task`, taskData, {
         withCredentials: true,
       })
       .then((res) => {

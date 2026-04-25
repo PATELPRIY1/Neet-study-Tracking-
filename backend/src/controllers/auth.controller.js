@@ -2,7 +2,7 @@ const userModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-async function register(req, res) {
+const register = async (req, res) => {
   const { username, email, password } = req.body;
   const isUserAlreadyExist = await userModel.findOne({
     $or: [{ email }, { username }],
@@ -34,15 +34,15 @@ async function register(req, res) {
       role: User.role,
     },
   });
-}
+};
 
-async function getUser(req, res) {
+const getUser = async (req, res) => {
   const userId = req.user.id;
   const user = await userModel.findById(userId).select("-password");
   res.status(200).json({ User: user });
-}
+};
 
-async function loginUser(req, res) {
+const loginUser = async (req, res) => {
   const { username, password } = req.body;
   const user = await userModel.findOne({ username });
   if (!user) {
@@ -56,7 +56,12 @@ async function loginUser(req, res) {
     { id: user._id, role: user.role },
     process.env.JWT_SECRET,
   );
-  res.cookie("token", token);
+  
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+  });
 
   res.status(200).json({
     message: "User logged in successfully",
@@ -67,11 +72,11 @@ async function loginUser(req, res) {
       role: user.role,
     },
   });
-}
+};
 
-async function logoutUser(req, res) {
+const logoutUser = async (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "User logged out successfully" });
-}
+};
 
 module.exports = { register, loginUser, logoutUser, getUser };

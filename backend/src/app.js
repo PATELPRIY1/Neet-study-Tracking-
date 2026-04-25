@@ -3,11 +3,13 @@ const taskRoutes = require("./routes/task.routes");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.routes");
 const cors = require("cors");
+require("dotenv").config();
+const { VITE_API_URL } = process.env;
 
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: VITE_API_URL,
     credentials: true,
   }),
 );

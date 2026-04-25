@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
+require("dotenv").config();
+const { VITE_API_URL } = process.env;
 
 const UpdateTask = () => {
   const navigate = useNavigate();
@@ -12,7 +14,7 @@ const UpdateTask = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/api/get-task-by/${taskId}`, {
+      .get(`${VITE_API_URL}/api/get-task-by/${taskId}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -55,7 +57,7 @@ const UpdateTask = () => {
         }
 
         await axios.put(
-          `http://localhost:3000/api/update-task/${taskId}`,
+          `${VITE_API_URL}/api/update-task/${taskId}`,
           taskData,
           {
             withCredentials: true,

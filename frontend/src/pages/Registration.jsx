@@ -2,6 +2,8 @@ import axios from "axios";
 import React from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+require("dotenv").config();
+const { VITE_API_URL } = process.env;
 
 const Registration = () => {
   const handleSubmit = (e) => {
@@ -21,7 +23,7 @@ const Registration = () => {
       return;
     }
     axios
-      .post("http://localhost:3000/api/auth/register", userData, {
+      .post(`${VITE_API_URL}/api/auth/register`, userData, {
         withCredentials: true,
       })
       .then((res) => {

@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Bounce, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
+require("dotenv").config();
+const { VITE_API_URL } = process.env;
 
 const UpdateDayTask = () => {
   const { id } = useParams();
@@ -21,7 +23,7 @@ const UpdateDayTask = () => {
     const fetchTask = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/getdaytasks`,
+          `${VITE_API_URL}/api/getdaytasks`,
           {
             withCredentials: true,
           },
@@ -66,7 +68,7 @@ const UpdateDayTask = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.put(`http://localhost:3000/api/updatetask/${id}`, formData, {
+      await axios.put(`${VITE_API_URL}/api/updatetask/${id}`, formData, {
         withCredentials: true,
       });
       Swal.fire("Success!", "Day task updated successfully.", "success");

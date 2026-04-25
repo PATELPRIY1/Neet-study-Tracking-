@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { Delete, EditSquare } from "@mui/icons-material";
 import { Bounce, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
+require("dotenv").config();
+const { VITE_API_URL } = process.env;
 
 const ViewDayByTask = () => {
   const [task, setTask] = useState([]);
@@ -13,7 +15,7 @@ const ViewDayByTask = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/getdaytasks", {
+      .get(`${VITE_API_URL}/api/getdaytasks`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -69,7 +71,7 @@ const ViewDayByTask = () => {
     });
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/deletetask/${taskId}`, {
+        await axios.delete(`${VITE_API_URL}/api/deletetask/${taskId}`, {
           withCredentials: true,
         });
         setTask((prevTasks) => prevTasks.filter((t) => t._id !== taskId));
@@ -93,7 +95,7 @@ const ViewDayByTask = () => {
     });
     if (result.isConfirmed) {
       try {
-        await axios.delete("http://localhost:3000/api/deletealltasks", {
+        await axios.delete(`${VITE_API_URL}/api/deletealltasks`, {
           withCredentials: true,
         });
         setTask([]);
@@ -119,7 +121,7 @@ const ViewDayByTask = () => {
     const newStatus = currentStatus === "completed" ? "pending" : "completed";
     try {
       await axios.put(
-        `http://localhost:3000/api/updatetaskstatus/${taskId}/done`,
+        `${VITE_API_URL}/api/updatetaskstatus/${taskId}/done`,
         {
           done: newStatus,
         },

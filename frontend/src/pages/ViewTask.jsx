@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { Delete, EditSquare } from "@mui/icons-material";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
+require("dotenv").config();
+const { VITE_API_URL } = process.env;
 
 function ViewTask() {
   const [task, setTask] = useState([]);
@@ -15,7 +17,7 @@ function ViewTask() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/get-task", {
+      .get(`${VITE_API_URL}/api/get-task`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -58,7 +60,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/delete-task/${taskId}`, {
+        await axios.delete(`${VITE_API_URL}/api/delete-task/${taskId}`, {
           withCredentials: true,
         });
         setTask((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
@@ -83,7 +85,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete("http://localhost:3000/api/delete-all-tasks", {
+        await axios.delete(`${VITE_API_URL}/api/delete-all-tasks`, {
           withCredentials: true,
         });
         setTask([]);
@@ -115,7 +117,7 @@ function ViewTask() {
 
       try {
         await axios.put(
-          `http://localhost:3000/api/update-task-status/${taskId}/status`,
+          `${VITE_API_URL}/api/update-task-status/${taskId}/status`,
           {
             status: newStatus,
           },

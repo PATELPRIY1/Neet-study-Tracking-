@@ -2,6 +2,8 @@ import React from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
+require("dotenv").config();
+const { VITE_API_URL } = process.env;
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,7 +24,7 @@ const Login = () => {
       return;
     }
     axios
-      .post("http://localhost:3000/api/auth/login", loginData, {
+      .post(`${VITE_API_URL}/api/auth/login`, loginData, {
         withCredentials: true,
       })
       .then((res) => {

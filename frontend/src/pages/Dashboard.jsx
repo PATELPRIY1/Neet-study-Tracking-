@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import IndexLineChart from "../components/LineChart";
+require ("dotenv").config();
+const { VITE_API_URL } = process.env;
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -11,10 +13,10 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const [taskRes, dayTaskRes] = await Promise.all([
-          axios.get("http://localhost:3000/api/get-task", {
+          axios.get(`${VITE_API_URL}/api/get-task`, {
             withCredentials: true,
           }),
-          axios.get("http://localhost:3000/api/getdaytasks", {
+          axios.get(`${VITE_API_URL}/api/getdaytasks`, {
             withCredentials: true,
           }),
         ]);
