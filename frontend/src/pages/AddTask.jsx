@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
 const VITE_API_URL = import.meta.env.VITE_API_URL;
+import api from "../api/axios";
 
 const AddTask = () => {
   const navigate = useNavigate();
@@ -25,10 +26,8 @@ const AddTask = () => {
       return;
     }
 
-    axios
-      .post(`${VITE_API_URL}/api/create-task`, taskData, {
-        withCredentials: true,
-      })
+    api
+      .post(`${VITE_API_URL}/api/create-task`, taskData)
       .then((res) => {
         navigate("/view-task");
         toast.success("Task created successfully!", {

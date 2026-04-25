@@ -5,6 +5,7 @@ import { Delete, EditSquare } from "@mui/icons-material";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
 const VITE_API_URL = import.meta.env.VITE_API_URL;
+import api from "../api/axios";
 
 function ViewTask() {
   const [task, setTask] = useState([]);
@@ -15,10 +16,8 @@ function ViewTask() {
   const rowsPerPage = 15;
 
   useEffect(() => {
-    axios
-      .get(`${VITE_API_URL}/api/get-task`, {
-        withCredentials: true,
-      })
+    api
+      .get(`${VITE_API_URL}/api/get-task`)
       .then((res) => {
         setTask(res.data.tasks);
         setLoading(false); // ✅ correct place
@@ -59,9 +58,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`${VITE_API_URL}/api/delete-task/${taskId}`, {
-          withCredentials: true,
-        });
+        await api.delete(`${VITE_API_URL}/api/delete-task/${taskId}`);
         setTask((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
         Swal.fire("Deleted!", "Your task has been deleted.", "success");
       } catch (err) {
@@ -84,9 +81,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`${VITE_API_URL}/api/delete-all-tasks`, {
-          withCredentials: true,
-        });
+        await api.delete(`${VITE_API_URL}/api/delete-all-tasks`);
         setTask([]);
         Swal.fire("Deleted!", "All your tasks have been deleted.", "success");
       } catch (err) {
@@ -115,14 +110,11 @@ function ViewTask() {
         currentTask.status === "pending" ? "completed" : "pending";
 
       try {
-        await axios.put(
+        await api.put(
           `${VITE_API_URL}/api/update-task-status/${taskId}/status`,
           {
             status: newStatus,
-          },
-          {
-            withCredentials: true,
-          },
+          }
         );
         // Update the task status in the UI
         setTask((prevTasks) =>

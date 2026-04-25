@@ -3,6 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Link, useNavigate } from "react-router-dom";
 const VITE_API_URL = import.meta.env.VITE_API_URL;
+import api from "../api/axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,10 +23,8 @@ const Login = () => {
       });
       return;
     }
-    axios
-      .post(`${VITE_API_URL}/api/auth/login`, loginData, {
-        withCredentials: true,
-      })
+    api
+      .post(`${VITE_API_URL}/api/auth/login`, loginData)
       .then((res) => {
         Swal.fire({
           icon: "success",
