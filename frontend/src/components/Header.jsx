@@ -3,7 +3,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
+import api from "../api/a";
 
 const Header = () => {
   const [dayTasks, setDayTasks] = useState([]);
@@ -12,12 +12,7 @@ const Header = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const dayTaskRes = await axios.get(
-          `${VITE_API_URL}/api/getdaytasks`,
-          {
-            withCredentials: true,
-          },
-        );
+        const dayTaskRes = await api.get("/getdaytasks");
 
         const responseData = dayTaskRes?.data || [];
         const fetchedDayTasks = Array.isArray(responseData)
@@ -45,15 +40,9 @@ const Header = () => {
   ).length;
 
   const handleLogout = () => {
-    axios
-      .post(
-        `${VITE_API_URL}/api/auth/logout`,
-        {},
-        { withCredentials: true },
-      )
-      .then(() => {
-        window.location.href = "/login";
-      });
+    api.post("/api/auth/logout").then(() => {
+      window.location.href = "/login";
+    });
   };
   return (
     <header className="bg-(--bg-transparent-color) py-4 px-8  flex justify-between items-center backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)]">
