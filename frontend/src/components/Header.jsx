@@ -12,7 +12,7 @@ const Header = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const dayTaskRes = await api.get("/getdaytasks");
+        const dayTaskRes = await api.get("api/getdaytasks");
 
         const responseData = dayTaskRes?.data || [];
         const fetchedDayTasks = Array.isArray(responseData)
