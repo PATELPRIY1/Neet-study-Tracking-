@@ -1,7 +1,7 @@
 import { Logout } from "@mui/icons-material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../api/a";
 
@@ -39,9 +39,15 @@ const Header = () => {
     (task) => task.done === "completed",
   ).length;
 
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     api.post("/api/auth/logout").then(() => {
-      window.location.href = "/login";
+      Swal.fire({
+        title: "Logged out",
+        text: "You have been logged out successfully.",
+      });
+      navigate("/login");
     });
   };
   return (

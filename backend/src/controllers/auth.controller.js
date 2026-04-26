@@ -93,7 +93,7 @@ const logoutUser = async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "None",
-    path: "/login",
+    path: "/",
   });
   res.status(200).json({ message: "User logged out successfully" });
 };
