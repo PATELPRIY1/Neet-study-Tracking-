@@ -57,9 +57,9 @@ const Header = () => {
         <h4>
           {completedDayTasks}/{totalDayTasks}
         </h4>
-        <span className="text-lg font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors">
+        <button className="text-lg font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors">
           <Logout onClick={handleLogout} />
-        </span>
+        </button>
       </div>
     </header>
   );
