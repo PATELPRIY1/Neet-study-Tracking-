@@ -12,7 +12,7 @@ const Header = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const dayTaskRes = await api.get("api/getdaytasks");
+        const dayTaskRes = await api.get("/api/getdaytasks");
 
         const responseData = dayTaskRes?.data || [];
         const fetchedDayTasks = Array.isArray(responseData)
@@ -34,6 +34,7 @@ const Header = () => {
   }, []);
 
   const totalDayTasks = dayTasks.length;
+  console.log("Total Day Tasks:", totalDayTasks);
 
   const completedDayTasks = dayTasks.filter(
     (task) => task.done === "completed",
