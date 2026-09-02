@@ -5,6 +5,7 @@ import {
   Route,
   Outlet,
 } from "react-router-dom";
+
 import AddTask from "./pages/AddTask";
 import AddDayTask from "./pages/AddDayTask";
 import ViewTask from "./pages/ViewTask";
@@ -19,32 +20,38 @@ import Registration from "./pages/Registration";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-// Layout wrapper for pages with components
-const MainLayout = () => (
-  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 min-h-screen">
-    <Sidebar />
-    <div className="col-span-2 md:col-span-2 lg:col-span-5 content-wrapper flex flex-col">
-      <Header />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
-  </div>
-);
+const MainLayout = () => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 min-h-screen">
+      <Sidebar />
 
-// Layout wrapper for auth pages (no components)
-const AuthLayout = ({ children }) => (
-  <div className="min-h-screen flex items-center justify-center">
-    {children}
-  </div>
-);
+      <div className="col-span-2 md:col-span-2 lg:col-span-5 content-wrapper flex flex-col">
+        <Header />
+
+        <main className="flex-1">
+          <Outlet />
+        </main>
+
+        <Footer />
+      </div>
+    </div>
+  );
+};
+
+const AuthLayout = ({ children }) => {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      {children}
+    </div>
+  );
+};
 
 const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Auth Routes - No Layout Components */}
+
+        {/* Public Routes */}
         <Route
           path="/login"
           element={
@@ -53,6 +60,7 @@ const App = () => {
             </AuthLayout>
           }
         />
+
         <Route
           path="/register"
           element={
@@ -62,22 +70,19 @@ const App = () => {
           }
         />
 
-        {/* Main Routes - With Layout Components */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/create-task" element={<AddTask />} />
-          <Route path="/create-day-task" element={<AddDayTask />} />
-          <Route path="/view-task" element={<ViewTask />} />
-          <Route path="/view-day-by-task" element={<ViewDayByTask />} />
-          <Route path="/update-day-task/:id" element={<UpdateDayTask />} />
-          <Route path="/getdaytaskby/:id" element={<UpdateTask />} />
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/create-task" element={<AddTask />} />
+            <Route path="/create-day-task" element={<AddDayTask />} />
+            <Route path="/view-task" element={<ViewTask />} />
+            <Route path="/view-day-by-task" element={<ViewDayByTask />} />
+            <Route path="/update-day-task/:id" element={<UpdateDayTask />} />
+            <Route path="/getdaytaskby/:id" element={<UpdateTask />} />
+          </Route>
         </Route>
+
       </Routes>
     </Router>
   );

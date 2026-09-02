@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import api from "../api/axios";
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
@@ -10,11 +10,12 @@ const ProtectedRoute = ({ children }) => {
       try {
         const res = await api.get("/api/auth/user");
 
-        console.log("Authenticated user:", res.data);
+        console.log("Authenticated:", res.data);
 
         setIsAuthenticated(true);
       } catch (error) {
-        console.error("Auth check failed:", error);
+        console.error("Authentication failed:", error);
+
         setIsAuthenticated(false);
       }
     };
@@ -30,7 +31,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
