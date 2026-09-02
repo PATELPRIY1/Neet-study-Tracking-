@@ -30,6 +30,8 @@ const Login = () => {
           title: "Login Successful",
           text: "You have been logged in successfully.",
         });
+        console.log("LOGIN SUCCESS");
+        console.log("Navigating to dashboard...");
         navigate("/", { replace: true });
       })
       .catch((err) => {
