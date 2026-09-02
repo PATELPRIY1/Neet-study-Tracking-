@@ -30,7 +30,7 @@ const Login = () => {
           title: "Login Successful",
           text: "You have been logged in successfully.",
         });
-        navigate("/");
+        navigate("/", { replace: true });
       })
       .catch((err) => {
         Swal.fire({
