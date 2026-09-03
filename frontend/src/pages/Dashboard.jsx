@@ -1,46 +1,44 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import IndexLineChart from "../components/LineChart";
+import api from "../api/axios";
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [dayTasks, setDayTasks] = useState([]);
   const [loading, setLoading] = useState(true);
- 
+
   useEffect(() => {
-  const checkAuthAndFetch = async () => {
-    try {
-    
-      // ✅ Step 2: If success → fetch dashboard data
-      const [taskRes, dayTaskRes] = await Promise.all([
-        api.get("/api/get-task"),
-        api.get("/api/getdaytasks"),
-      ]);
+    const fetchDashboardData = async () => {
+      try {
+        const [taskRes, dayTaskRes] = await Promise.all([
+          api.get("/api/get-task"),
+          api.get("/api/getdaytasks"),
+        ]);
 
-      const fetchedTasks = Array.isArray(taskRes.data.tasks)
-        ? taskRes.data.tasks
-        : [];
+        console.log("Tasks:", taskRes.data);
+        console.log("Day Tasks:", dayTaskRes.data);
 
-      const fetchedDayTasks = Array.isArray(dayTaskRes.data)
-        ? dayTaskRes.data
-        : Array.isArray(dayTaskRes.data.daytasks)
-        ? dayTaskRes.data.daytasks
-        : [];
+        const fetchedTasks = Array.isArray(taskRes.data.tasks)
+          ? taskRes.data.tasks
+          : [];
 
-      setTasks(fetchedTasks);
-      setDayTasks(fetchedDayTasks);
-    } catch (error) {
-      console.error("Auth or data error:", error);
+        const fetchedDayTasks = Array.isArray(dayTaskRes.data)
+          ? dayTaskRes.data
+          : Array.isArray(dayTaskRes.data.daytasks)
+          ? dayTaskRes.data.daytasks
+          : [];
 
-      // ❗ IMPORTANT: redirect if unauthorized
-      navigate("/login");
-    } finally {
-      setLoading(false);
-    }
-  };
+        setTasks(fetchedTasks);
+        setDayTasks(fetchedDayTasks);
+      } catch (error) {
+        console.error("Dashboard data error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  checkAuthAndFetch();
-}, []);
+    fetchDashboardData();
+  }, []);
 
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(
