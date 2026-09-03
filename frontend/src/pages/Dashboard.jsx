@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import IndexLineChart from "../components/LineChart";
-import api from "../api/axios";
-import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [dayTasks, setDayTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
+ 
   useEffect(() => {
   const checkAuthAndFetch = async () => {
     try {
-      // ✅ Step 1: Check if user is logged in
-      const userRes = await api.get("/api/auth/user");
-
-      console.log("User:", userRes.data);
-
+    
       // ✅ Step 2: If success → fetch dashboard data
       const [taskRes, dayTaskRes] = await Promise.all([
         api.get("/api/get-task"),
