@@ -57,10 +57,10 @@ const Sidebar = () => {
           <TaskAlt /> View Task
         </Link>
         <Link
-          to="/view-day-by-task"
+          to="/weeklyPlanner"
           className="text-lg flex gap-3 font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors"
         >
-          <TaskAlt /> View Day by Task
+          <TaskAlt /> Weekly Planner
         </Link>
       </div>
     </aside>
