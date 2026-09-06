@@ -57,7 +57,7 @@ const Sidebar = () => {
           <TaskAlt /> View Task
         </Link>
         <Link
-          to="/weeklyPlanner"
+          to="/weekly-planner"
           className="text-lg flex gap-3 font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors"
         >
           <TaskAlt /> Weekly Planner
