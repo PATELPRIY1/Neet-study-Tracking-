@@ -2,7 +2,7 @@ const express = require("express");
 const taskRoutes = require("./routes/task.routes");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.routes");
-const weeklyPlannerRoutes = require("./routes/weeklyPlanner.routes");
+const weeklyPlannerRoutes = require("./routes/weekly.routes");
 const cors = require("cors");
 
 const app = express();
