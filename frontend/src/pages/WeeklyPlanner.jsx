@@ -114,25 +114,12 @@ const WeeklyPlanner = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#111111] text-white">
-
-      {/* HEADER */}
-
-      <header className="border-b border-white/10 px-6 py-5">
-
+    <div className="p-4">
+      <h2 className="text-xl font-semibold leading-relaxed pb-4">
+        Weekly Task
+      </h2>
+      
         <div className="flex items-center justify-between">
-
-          <div className="flex items-center gap-3">
-
-            <span className="text-3xl">
-              📅
-            </span>
-
-            <h1 className="text-3xl font-bold">
-              WEEKLY PLANNER
-            </h1>
-
-          </div>
 
           <div className="flex items-center gap-2">
 
@@ -186,10 +173,6 @@ const WeeklyPlanner = () => {
 
         </div>
 
-      </header>
-
-      {/* FILTER */}
-
       <div className="flex gap-3 border-b border-white/10 px-6 py-4">
 
         <button
@@ -221,8 +204,6 @@ const WeeklyPlanner = () => {
         </button>
 
       </div>
-
-      {/* CARDS */}
 
       <main className="p-6">
 
