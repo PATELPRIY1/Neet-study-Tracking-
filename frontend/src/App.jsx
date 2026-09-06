@@ -19,6 +19,7 @@ import ViewDayByTask from "./pages/ViewDayByTask";
 import Registration from "./pages/Registration";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import WeeklyPlanner from "./pages/WeeklyPlanner.jsx";
 
 const MainLayout = () => {
   return (
@@ -80,6 +81,7 @@ const App = () => {
             <Route path="/view-day-by-task" element={<ViewDayByTask />} />
             <Route path="/update-day-task/:id" element={<UpdateDayTask />} />
             <Route path="/getdaytaskby/:id" element={<UpdateTask />} />
+            <Route path="/weekly-planner" element={<WeeklyPlanner/>} />
           </Route>
         </Route>
 
