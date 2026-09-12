@@ -88,6 +88,42 @@ const updatePlannerTask = async (req, res) => {
   }
 };
 
+const updatePlanner = async (req, res) => {
+  try {
+    const { title, subject, weekStart, weekEnd, tasks } = req.body;
+
+    const planner = await WeeklyPlanner.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    });
+
+    if (!planner) {
+      return res.status(404).json({
+        message: "Planner not found",
+      });
+    }
+
+    planner.title = title;
+    planner.subject = subject;
+    planner.weekStart = weekStart;
+    planner.weekEnd = weekEnd;
+    planner.tasks = tasks;
+
+    await planner.save();
+
+    res.status(200).json({
+      message: "Planner updated successfully",
+      planner,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Failed to update planner",
+    });
+  }
+};
+
 // DELETE chapter
 const deletePlanner = async (req, res) => {
   try {
@@ -118,5 +154,6 @@ module.exports = {
   getPlanner,
   createPlanner,
   updatePlannerTask,
+  updatePlanner,
   deletePlanner,
 };

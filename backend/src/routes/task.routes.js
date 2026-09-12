@@ -22,5 +22,4 @@ router.delete("/deletetask/:id", authUser, daytaskCo.deleteTasks);
 router.put("/updatetask/:id", authUser, daytaskCo.updateTasks);
 router.put("/updatetaskstatus/:id/done", authUser, daytaskCo.updateTaskStatus);
 router.delete("/deletealltasks", authUser, daytaskCo.deleteAllTasks);
-
 module.exports = router;

@@ -6,28 +6,22 @@ const weeklyPlannerController = require("../controllers/weeklyPlanner.controller
 
 const { authUser } = require("../middleware/auth.middleware");
 
-router.get(
-  "/weekly-planner",
-  authUser,
-  weeklyPlannerController.getPlanner
-);
-
-router.post(
-  "/weekly-planner",
-  authUser,
-  weeklyPlannerController.createPlanner
-);
-
+router.get("/weekly-planner", authUser, weeklyPlannerController.getPlanner);
+router.post("/weekly-planner", authUser, weeklyPlannerController.createPlanner);
 router.patch(
-  "/weekly-planner/:id/task/:taskId",
+  "/weekly-planner/:plannerId/:taskId",
   authUser,
-  weeklyPlannerController.updatePlannerTask
+  weeklyPlannerController.updateTask,
 );
-
 router.delete(
-  "/weekly-planner/:id",
+  "/weekly-planner/:plannerId",
   authUser,
-  weeklyPlannerController.deletePlanner
+  weeklyPlannerController.deletePlanner,
+);
+router.put(
+  "/weekly-planner/:plannerId",
+  authUser,
+  weeklyPlannerController.updatePlanner,
 );
 
 module.exports = router;

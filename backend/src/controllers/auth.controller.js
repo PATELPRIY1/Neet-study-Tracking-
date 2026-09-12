@@ -67,6 +67,9 @@ const loginUser = async (req, res) => {
     secure: true,
     sameSite: "None",
     path: "/",
+    // secure: isProduction,
+    // sameSite: isProduction ? "None" : "Lax",
+    // path: "/",
   });
 
   res.status(200).json({

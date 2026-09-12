@@ -22,7 +22,7 @@ const Registration = () => {
       return;
     }
     api
-      .post("/api/auth/register", userData)
+      .post("/auth/register", userData)
       .then((res) => {
         Swal.fire({
           icon: "success",
