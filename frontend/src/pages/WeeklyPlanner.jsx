@@ -355,7 +355,7 @@ const WeeklyPlanner = () => {
     setShowModal(false);
     setEditingPlanner(null);
 
-    setSelectedWeek("This week");
+    setWeekFilter("This week");
 
     setFormData({
       title: "",
@@ -503,9 +503,14 @@ const WeeklyPlanner = () => {
         <main className="p-6">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {filteredPlanners.map((planner, index) => (
-              <h2 className="text-[17px] font-semibold">
-                {index + 1}. {planner.title}
-              </h2>
+              <ChapterCard
+                key={planner._id}
+                planner={planner}
+                index={index}
+                toggleTask={toggleTask}
+                deletePlanner={deletePlanner}
+                openEditModal={openEditModal}
+              />
             ))}
 
             <button
