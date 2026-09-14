@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const res = await axios.get(`${VITE_API_URL}/api/auth/me`, {
+      const res = await axios.get(`${VITE_API_URL}/auth/me`, {
         withCredentials: true,
       });
       setUser(res.data.user);
