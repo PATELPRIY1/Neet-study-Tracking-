@@ -33,7 +33,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
-app.use("/api/", taskRoutes);
-app.use("/api/", weeklyPlannerRoutes);
+app.use("/api", taskRoutes);
+app.use("/api", weeklyPlannerRoutes);
 
 module.exports = app;
