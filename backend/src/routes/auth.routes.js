@@ -4,14 +4,14 @@ const { authUser } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-router.post("/api/register", authController.register);
+router.post("/register", authController.register);
 
-router.get("/api/user", authUser, authController.getUser);
+router.get("/user", authUser, authController.getUser);
 
-router.post("/api/login", authController.loginUser);
+router.post("/login", authController.loginUser);
 
-router.post("/api/logout", authController.logoutUser);
+router.post("/logout", authController.logoutUser);
 
-router.get("/api/me", authUser, authController.getMe);
+router.get("/me", authUser, authController.getMe);
 
 module.exports = router;
