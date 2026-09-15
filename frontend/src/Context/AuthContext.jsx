@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
-import axios from "axios";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
+import axios from "../api/axios";
+
 
 export const AuthContext = createContext();
 
