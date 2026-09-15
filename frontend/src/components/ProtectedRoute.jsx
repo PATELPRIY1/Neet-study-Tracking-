@@ -10,7 +10,7 @@ const ProtectedRoute = () => {
       try {
         const res = await api.get("/api/auth/user");
 
-        // console.log("Authenticated:", res.data);
+        console.log("Authenticated:", res.data);
 
         setIsAuthenticated(true);
       } catch (error) {
