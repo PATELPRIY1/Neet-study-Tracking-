@@ -150,7 +150,9 @@ const WeeklyPlanner = () => {
         Array.isArray(response.data.planners) ? response.data.planners : [],
       );
     } catch (error) {
-      console.error("Failed to fetch planner:", error);
+      console.error("Failed to fetch planner:", error.response?.data || error);
+
+      setPlanners([]);
     } finally {
       setLoading(false);
     }
@@ -269,7 +271,10 @@ const WeeklyPlanner = () => {
 
       if (editingPlanner) {
         // EDIT
-        response = await api.put(`/api/weekly-planner/${editingPlanner._id}`, data);
+        response = await api.put(
+          `/api/weekly-planner/${editingPlanner._id}`,
+          data,
+        );
 
         setPlanners((previous) =>
           previous.map((planner) =>

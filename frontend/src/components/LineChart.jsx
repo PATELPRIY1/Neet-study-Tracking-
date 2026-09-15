@@ -8,15 +8,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useEffect, useState } from "react";
-import axios from "axios";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
+import api from "../api/axios";
 
 const prepareChartData = (tasks) => {
+  if (!Array.isArray(tasks)) {
+    return [];
+  }
+
   let completed = 0;
   let pending = 0;
 
   return tasks.map((task, index) => {
-    if (task.status === "completed") {
+    if (task.done === "completed") {
       completed++;
     } else {
       pending++;
@@ -36,13 +39,24 @@ export default function IndexLineChart() {
   useEffect(() => {
     const fetchDayTasks = async () => {
       try {
-        const response = await axios.get(
-          "/api/getdaytasks",
-          { withCredentials: true },
-        );
-        setDayTasks(response.data);
+        const response = await api.get("/api/getdaytasks");
+
+        console.log("LineChart day tasks response:", response.data);
+
+        const data = response.data;
+
+        const processedData = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.daytasks)
+            ? data.daytasks
+            : Array.isArray(data?.tasks)
+              ? data.tasks
+              : [];
+
+        setDayTasks(processedData);
       } catch (error) {
         console.error("Error fetching day tasks:", error);
+        setDayTasks([]);
       }
     };
 
@@ -55,9 +69,13 @@ export default function IndexLineChart() {
     <div className="w-full max-w-4xl mx-auto">
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>
-          <CartesianGrid stroke="rgba(255,255,255,0.1)" strokeDasharray="3 3" />
+          <CartesianGrid
+            stroke="rgba(255,255,255,0.1)"
+            strokeDasharray="3 3"
+          />
 
           <XAxis dataKey="name" stroke="#ccc" />
+
           <YAxis stroke="#ccc" />
 
           <Tooltip
