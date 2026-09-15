@@ -57,7 +57,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await api.delete(`/delete-task/${taskId}`);
+        await api.delete(`/api/delete-task/${taskId}`);
         setTask((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
         Swal.fire("Deleted!", "Your task has been deleted.", "success");
       } catch (err) {
@@ -80,7 +80,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await api.delete("/delete-all-tasks");
+        await api.delete("/api/delete-all-tasks");
         setTask([]);
         Swal.fire("Deleted!", "All your tasks have been deleted.", "success");
       } catch (err) {
@@ -255,7 +255,7 @@ function ViewTask() {
                           </td>
                           <td className="px-4 py-3">
                             <Link
-                              to={`/get-task/${taskItem._id}`}
+                              to={`/api/get-task/${taskItem._id}`}
                               className="text-blue-400 hover:underline cursor-pointer"
                             >
                               <EditSquare />
