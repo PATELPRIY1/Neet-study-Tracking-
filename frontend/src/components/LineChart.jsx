@@ -37,7 +37,7 @@ export default function IndexLineChart() {
     const fetchDayTasks = async () => {
       try {
         const response = await axios.get(
-          `${VITE_API_URL}/api/getdaytasks`,
+          `${VITE_API_URL}/getdaytasks`,
           { withCredentials: true },
         );
         setDayTasks(response.data);
