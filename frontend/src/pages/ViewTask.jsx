@@ -16,7 +16,7 @@ function ViewTask() {
 
   useEffect(() => {
     api
-      .get("/api/get-task")
+      .get("/get-task")
       .then((res) => {
         setTask(res.data.tasks);
         setLoading(false); // ✅ correct place
@@ -57,7 +57,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await api.delete(`/api/delete-task/${taskId}`);
+        await api.delete(`/delete-task/${taskId}`);
         setTask((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
         Swal.fire("Deleted!", "Your task has been deleted.", "success");
       } catch (err) {
@@ -80,7 +80,7 @@ function ViewTask() {
 
     if (result.isConfirmed) {
       try {
-        await api.delete("/api/delete-all-tasks");
+        await api.delete("/delete-all-tasks");
         setTask([]);
         Swal.fire("Deleted!", "All your tasks have been deleted.", "success");
       } catch (err) {

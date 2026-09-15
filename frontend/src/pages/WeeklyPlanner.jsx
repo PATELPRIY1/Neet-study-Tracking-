@@ -142,7 +142,7 @@ const WeeklyPlanner = () => {
 
   const fetchPlanner = async () => {
     try {
-      const response = await api.get("/api/weekly-planner");
+      const response = await api.get("/weekly-planner");
 
       console.log("Planner:", response.data);
 
@@ -268,7 +268,7 @@ const WeeklyPlanner = () => {
       if (editingPlanner) {
         // EDIT
         response = await api.put(
-          `/api/weekly-planner/${editingPlanner._id}`,
+          `/weekly-planner/${editingPlanner._id}`,
           data,
         );
 
@@ -281,7 +281,7 @@ const WeeklyPlanner = () => {
         );
       } else {
         // CREATE
-        response = await api.post("/api/weekly-planner", data);
+        response = await api.post("/weekly-planner", data);
 
         setPlanners((previous) => [...previous, response.data.planner]);
       }
@@ -319,7 +319,7 @@ const WeeklyPlanner = () => {
         }),
       );
 
-      await api.patch(`/api/weekly-planner/${plannerId}/task/${taskId}`, {
+      await api.patch(`/weekly-planner/${plannerId}/task/${taskId}`, {
         completed,
       });
     } catch (error) {
@@ -337,7 +337,7 @@ const WeeklyPlanner = () => {
     if (!confirmed) return;
 
     try {
-      await api.delete(`/api/weekly-planner/${plannerId}`);
+      await api.delete(`/weekly-planner/${plannerId}`);
 
       setPlanners((previous) =>
         previous.filter((planner) => planner._id !== plannerId),

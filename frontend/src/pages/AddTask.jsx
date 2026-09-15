@@ -26,7 +26,7 @@ const AddTask = () => {
     }
 
     api
-      .post("/api/create-task", taskData)
+      .post("/create-task", taskData)
       .then((res) => {
         navigate("/view-task");
         toast.success("Task created successfully!", {

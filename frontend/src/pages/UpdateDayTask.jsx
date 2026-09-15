@@ -21,7 +21,7 @@ const UpdateDayTask = () => {
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const response = await api.get("/api/getdaytasks");
+        const response = await api.get("/getdaytasks");
 
         const tasks = Array.isArray(response.data) ? response.data : [];
         const task = tasks.find((t) => t._id === id);
@@ -63,7 +63,7 @@ const UpdateDayTask = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.put(`/api/updatetask/${id}`, formData);
+      await api.put(`/updatetask/${id}`, formData);
       Swal.fire("Success!", "Day task updated successfully.", "success");
       navigate("/view-day-by-task");
     } catch (error) {

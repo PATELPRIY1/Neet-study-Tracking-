@@ -13,7 +13,7 @@ const UpdateTask = () => {
 
   useEffect(() => {
     api
-      .get(`/api/get-task-by/${taskId}`, {
+      .get(`/get-task-by/${taskId}`, {
         withCredentials: true,
       })
       .then((res) => {
@@ -56,7 +56,7 @@ const UpdateTask = () => {
         }
 
         await api.put(
-          `/api/update-task/${taskId}`,
+          `/update-task/${taskId}`,
           taskData,
           {
             withCredentials: true,

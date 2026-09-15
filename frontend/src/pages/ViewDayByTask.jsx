@@ -15,7 +15,7 @@ const ViewDayByTask = () => {
 
   useEffect(() => {
     api
-      .get("/api/getdaytasks")
+      .get("/getdaytasks")
       .then((res) => {
         const data = res.data;
         const processedData = Array.isArray(data)
@@ -69,7 +69,7 @@ const ViewDayByTask = () => {
     });
     if (result.isConfirmed) {
       try {
-        await api.delete(`/api/deletetask/${taskId}`);
+        await api.delete(`/deletetask/${taskId}`);
         setTask((prevTasks) => prevTasks.filter((t) => t._id !== taskId));
         Swal.fire("Deleted!", "Your task has been deleted.", "success");
       } catch (err) {
@@ -91,7 +91,7 @@ const ViewDayByTask = () => {
     });
     if (result.isConfirmed) {
       try {
-        await api.delete("/api/deletealltasks");
+        await api.delete("/deletealltasks");
         setTask([]);
         Swal.fire("Deleted!", "All tasks have been deleted.", "success");
       } catch (err) {
@@ -115,7 +115,7 @@ const ViewDayByTask = () => {
     const newStatus = currentStatus === "completed" ? "pending" : "completed";
     try {
       await api.put(
-        `/api/updatetaskstatus/${taskId}/done`,
+        `/updatetaskstatus/${taskId}/done`,
         {
           done: newStatus,
         },

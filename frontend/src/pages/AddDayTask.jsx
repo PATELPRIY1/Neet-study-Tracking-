@@ -41,7 +41,7 @@ const AddDayTask = () => {
         return;
       }
 
-      await api.post("/api/createtask", formData);
+      await api.post("/createtask", formData);
 
       toast.success("Day task created successfully!", {
         position: "top-right",
