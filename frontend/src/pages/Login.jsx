@@ -21,7 +21,7 @@ const Login = () => {
       return;
     }
     api
-      .post("/login", loginData)
+      .post("/api/login", loginData)
       .then((res) => {
         Swal.fire({
           icon: "success",

@@ -21,7 +21,7 @@ const UpdateDayTask = () => {
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const response = await api.get("/getdaytasks");
+        const response = await api.get("/api/getdaytasks");
 
         const tasks = Array.isArray(response.data) ? response.data : [];
         const task = tasks.find((t) => t._id === id);

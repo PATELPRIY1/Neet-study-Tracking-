@@ -10,7 +10,7 @@ const Sidebar = () => {
 
   async function fetchUser() {
     try {
-      const userRes = await axios.get(`${VITE_API_URL}/api/auth/user`, {
+      const userRes = await axios.get("/api/auth/user", {
         withCredentials: true,
       });
       setUser(userRes.data.User);

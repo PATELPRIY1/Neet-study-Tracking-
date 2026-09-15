@@ -13,7 +13,7 @@ const UpdateTask = () => {
 
   useEffect(() => {
     api
-      .get(`/get-task-by/${taskId}`, {
+      .get(`/api/get-task-by/${taskId}`, {
         withCredentials: true,
       })
       .then((res) => {
