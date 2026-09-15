@@ -34,7 +34,7 @@ const Header = () => {
   }, []);
 
   const totalDayTasks = dayTasks.length;
-  console.log("Total Day Tasks:", totalDayTasks);
+  // console.log("Total Day Tasks:", totalDayTasks);
 
   const completedDayTasks = dayTasks.filter(
     (task) => task.done === "completed",

@@ -41,7 +41,7 @@ export default function IndexLineChart() {
       try {
         const response = await api.get("/api/getdaytasks");
 
-        console.log("LineChart day tasks response:", response.data);
+        // console.log("LineChart day tasks response:", response.data);
 
         const data = response.data;
 
