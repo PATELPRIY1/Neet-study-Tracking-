@@ -187,6 +187,8 @@ const WeeklyPlanner = () => {
   };
 
   const filteredPlanners = useMemo(() => {
+    const safePlanners = Array.isArray(planners) ? planners : [];
+
     const today = getDateOnly(new Date());
     const currentWeekStart = getStartOfWeek(today);
 
@@ -206,13 +208,11 @@ const WeeklyPlanner = () => {
       weekStart.setDate(weekStart.getDate() - 7);
     }
 
-    return planners.filter((planner) => {
-      // Subject filter
+    return safePlanners.filter((planner) => {
       if (subject !== "All" && planner.subject !== subject) {
         return false;
       }
 
-      // All weeks
       if (!weekStart) {
         return true;
       }
@@ -269,7 +269,7 @@ const WeeklyPlanner = () => {
 
       if (editingPlanner) {
         // EDIT
-        response = await api.put(`/weekly-planner/${editingPlanner._id}`, data);
+        response = await api.put(`/api/weekly-planner/${editingPlanner._id}`, data);
 
         setPlanners((previous) =>
           previous.map((planner) =>
@@ -280,7 +280,7 @@ const WeeklyPlanner = () => {
         );
       } else {
         // CREATE
-        response = await api.post("/weekly-planner", data);
+        response = await api.post("/api/weekly-planner", data);
 
         setPlanners((previous) => [...previous, response.data.planner]);
       }
@@ -297,16 +297,17 @@ const WeeklyPlanner = () => {
 
   const toggleTask = async (plannerId, taskId, completed) => {
     try {
-      // Optimistic UI
       setPlanners((previous) =>
         previous.map((planner) => {
           if (planner._id !== plannerId) {
             return planner;
           }
 
+          const tasks = Array.isArray(planner.tasks) ? planner.tasks : [];
+
           return {
             ...planner,
-            tasks: planner.tasks.map((task) =>
+            tasks: tasks.map((task) =>
               task._id === taskId
                 ? {
                     ...task,
@@ -318,7 +319,7 @@ const WeeklyPlanner = () => {
         }),
       );
 
-      await api.patch(`/weekly-planner/${plannerId}/task/${taskId}`, {
+      await api.patch(`/api/weekly-planner/${plannerId}/task/${taskId}`, {
         completed,
       });
     } catch (error) {
@@ -336,7 +337,7 @@ const WeeklyPlanner = () => {
     if (!confirmed) return;
 
     try {
-      await api.delete(`/weekly-planner/${plannerId}`);
+      await api.delete(`/api/weekly-planner/${plannerId}`);
 
       setPlanners((previous) =>
         previous.filter((planner) => planner._id !== plannerId),
@@ -388,11 +389,13 @@ const WeeklyPlanner = () => {
     });
 
     setTaskNames(
-      planner.tasks?.map((task) => ({
-        _id: task._id,
-        name: task.name,
-        completed: task.completed,
-      })) || [],
+      Array.isArray(planner.tasks)
+        ? planner.tasks.map((task) => ({
+            _id: task._id,
+            name: task.name,
+            completed: Boolean(task.completed),
+          }))
+        : [],
     );
 
     setNewTaskName("");
