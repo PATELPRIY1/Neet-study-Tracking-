@@ -146,7 +146,9 @@ const WeeklyPlanner = () => {
 
       console.log("Planner:", response.data);
 
-      setPlanners(response.data.planners || []);
+      setPlanners(
+        Array.isArray(response.data.planners) ? response.data.planners : [],
+      );
     } catch (error) {
       console.error("Failed to fetch planner:", error);
     } finally {
@@ -267,10 +269,7 @@ const WeeklyPlanner = () => {
 
       if (editingPlanner) {
         // EDIT
-        response = await api.put(
-          `/weekly-planner/${editingPlanner._id}`,
-          data,
-        );
+        response = await api.put(`/weekly-planner/${editingPlanner._id}`, data);
 
         setPlanners((previous) =>
           previous.map((planner) =>
@@ -741,9 +740,11 @@ const ChapterCard = ({
   deletePlanner,
   openEditModal,
 }) => {
-  const completedCount = planner.tasks.filter((task) => task.completed).length;
+  const tasks = Array.isArray(planner.tasks) ? planner.tasks : [];
 
-  const totalTasks = planner.tasks.length;
+  const completedCount = tasks.filter((task) => task.completed).length;
+
+  const totalTasks = tasks.length;
 
   const progress =
     totalTasks === 0 ? 0 : Math.round((completedCount / totalTasks) * 100);
@@ -778,14 +779,14 @@ const ChapterCard = ({
       </div>
 
       <div className="mt-5 space-y-2.5">
-        {planner.tasks.map((task) => (
+        {tasks.map((task, taskIndex) => (
           <label
-            key={task._id}
+            key={task._id || `${planner._id}-task-${taskIndex}`}
             className="flex cursor-pointer items-center gap-2.5 text-sm"
           >
             <input
               type="checkbox"
-              checked={task.completed}
+              checked={Boolean(task.completed)}
               onChange={(e) =>
                 toggleTask(planner._id, task._id, e.target.checked)
               }
