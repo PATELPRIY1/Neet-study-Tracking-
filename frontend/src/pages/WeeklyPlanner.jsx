@@ -144,7 +144,7 @@ const WeeklyPlanner = () => {
     try {
       const response = await api.get("/api/weekly-planner");
 
-      console.log("Planner:", response.data);
+      // console.log("Planner:", response.data);
 
       setPlanners(
         Array.isArray(response.data.planners) ? response.data.planners : [],

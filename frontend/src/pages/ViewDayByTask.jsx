@@ -69,7 +69,7 @@ const ViewDayByTask = () => {
     });
     if (result.isConfirmed) {
       try {
-        await api.delete(`/deletetask/${taskId}`);
+        await api.delete(`/api/deletetask/${taskId}`);
         setTask((prevTasks) => prevTasks.filter((t) => t._id !== taskId));
         Swal.fire("Deleted!", "Your task has been deleted.", "success");
       } catch (err) {

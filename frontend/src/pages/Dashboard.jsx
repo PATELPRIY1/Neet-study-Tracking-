@@ -15,8 +15,8 @@ const Dashboard = () => {
           api.get("/api/getdaytasks"),
         ]);
 
-        console.log("Tasks:", taskRes.data);
-        console.log("Day Tasks:", dayTaskRes.data);
+        // console.log("Tasks:", taskRes.data);
+        // console.log("Day Tasks:", dayTaskRes.data);
 
         const fetchedTasks = Array.isArray(taskRes.data.tasks)
           ? taskRes.data.tasks
