@@ -1,8 +1,8 @@
 import React from "react";
 import { AddTask, DashboardCustomize, TaskAlt } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import axios from "axios";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
+import axios from "../api/axios";
+
 
 const Sidebar = () => {
   const [user, setUser] = React.useState(null);

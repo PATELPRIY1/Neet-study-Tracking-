@@ -43,7 +43,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    api.post("/auth/logout").then(() => {
+    api.post("/api/auth/logout").then(() => {
       Swal.fire({
         title: "Logged out",
         text: "You have been logged out successfully.",
