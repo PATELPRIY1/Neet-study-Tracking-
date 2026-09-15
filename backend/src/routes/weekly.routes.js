@@ -11,7 +11,7 @@ router.post("/weekly-planner", authUser, weeklyPlannerController.createPlanner);
 router.patch(
   "/weekly-planner/:plannerId/:taskId",
   authUser,
-  weeklyPlannerController.updateTask,
+  weeklyPlannerController.updatePlannerTask,
 );
 router.delete(
   "/weekly-planner/:plannerId",

@@ -46,14 +46,14 @@ const createPlanner = async (req, res) => {
   }
 };
 
-// UPDATE checkbox
+// UPDATE checkbox/task
 const updatePlannerTask = async (req, res) => {
   try {
-    const { id, taskId } = req.params;
+    const { plannerId, taskId } = req.params;
     const { completed } = req.body;
 
     const planner = await WeeklyPlanner.findOne({
-      _id: id,
+      _id: plannerId,
       user: req.user.id,
     });
 
@@ -88,12 +88,13 @@ const updatePlannerTask = async (req, res) => {
   }
 };
 
+// UPDATE planner
 const updatePlanner = async (req, res) => {
   try {
     const { title, subject, weekStart, weekEnd, tasks } = req.body;
 
     const planner = await WeeklyPlanner.findOne({
-      _id: req.params.id,
+      _id: req.params.plannerId,
       user: req.user.id,
     });
 
@@ -128,7 +129,7 @@ const updatePlanner = async (req, res) => {
 const deletePlanner = async (req, res) => {
   try {
     const planner = await WeeklyPlanner.findOneAndDelete({
-      _id: req.params.id,
+      _id: req.params.plannerId,
       user: req.user.id,
     });
 
