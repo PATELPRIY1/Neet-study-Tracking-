@@ -142,7 +142,7 @@ const WeeklyPlanner = () => {
 
   const fetchPlanner = async () => {
     try {
-      const response = await api.get("/weekly-planner");
+      const response = await api.get("/api/weekly-planner");
 
       console.log("Planner:", response.data);
 

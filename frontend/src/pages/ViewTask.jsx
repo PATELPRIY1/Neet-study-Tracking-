@@ -16,7 +16,7 @@ function ViewTask() {
 
   useEffect(() => {
     api
-      .get("/get-task")
+      .get("/api/get-task")
       .then((res) => {
         setTask(res.data.tasks);
         setLoading(false); // ✅ correct place

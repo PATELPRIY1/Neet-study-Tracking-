@@ -15,7 +15,7 @@ const ViewDayByTask = () => {
 
   useEffect(() => {
     api
-      .get("/getdaytasks")
+      .get("/api/getdaytasks")
       .then((res) => {
         const data = res.data;
         const processedData = Array.isArray(data)
