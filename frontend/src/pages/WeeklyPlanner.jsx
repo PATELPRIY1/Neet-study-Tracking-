@@ -422,55 +422,38 @@ const WeeklyPlanner = () => {
       </h2>
 
       <div className="p-6 rounded-sm bg-(--bg-transparent-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)">
-        <div className="flex items-end justify-end">
-          <div className="flex items-center gap-2">
-            <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
-              <Filter size={18} />
-            </button>
-
-            <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
-              <ArrowUpDown size={18} />
-            </button>
-
-            <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
-              <Sparkles size={18} />
-            </button>
-
-            <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
-              <Search size={18} />
-            </button>
-
-            <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
-              <SlidersHorizontal size={18} />
-            </button>
-
-            <button
-              onClick={openCreateModal}
-              className="ml-3 flex items-center gap-2 px-4 py-2 text-xl font-semibold rounded-md bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] active:scale-[95%]"
-            >
-              <Plus size={18} />
-              New
-              <ChevronDown size={16} />
-            </button>
-          </div>
-        </div>
-
         <div className="flex justify-between items-center">
-          <div className="mt-5 flex items-center gap-2">
-            <button className="flex items-center gap-2 rounded-lg bg-[#292929] px-4 py-2 text-sm">
-              <Atom size={17} />
-              PHYSICS & CHEMISTRY
-            </button>
+          <div className="flex items-center justify-between gap-3 border-b border-white/10 px-6 py-4">
+            <div className="flex items-center gap-2">
+              <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
+                <Filter size={18} />
+              </button>
 
-            <button className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-400">
-              <Dna size={17} />
-              BOTANY & ZOOLOGY
-            </button>
+              <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
+                <ArrowUpDown size={18} />
+              </button>
 
-            <button className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm text-gray-400">
-              <FileText size={17} />
-              DETAILED LOG
-            </button>
+              <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
+                <Sparkles size={18} />
+              </button>
+
+              <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
+                <Search size={18} />
+              </button>
+
+              <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
+                <SlidersHorizontal size={18} />
+              </button>
+
+              <button
+                onClick={openCreateModal}
+                className="ml-3 flex items-center gap-2 px-4 py-2 text-xl font-semibold rounded-md bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] active:scale-[95%]"
+              >
+                <Plus size={18} />
+                New
+                <ChevronDown size={16} />
+              </button>
+            </div>
           </div>
 
           <div className="flex gap-3 border-b border-white/10 px-6 py-4">
