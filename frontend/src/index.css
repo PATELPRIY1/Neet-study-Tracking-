@@ -52,3 +52,52 @@ img {
 .content-wrapper > div:not(:last-child) {
   flex: 1;
 }
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: rgba(20, 20, 20, 0.7);
+}
+
+.search-box input {
+  width: 180px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+}
+
+.search-box input::placeholder {
+  color: #999;
+}
+
+.search-box button {
+  border: none;
+  background: transparent;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.sort-buttons button {
+  padding: 8px 12px;
+  border: 1px solid #333;
+  border-radius: 7px;
+  background: #222;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.sort-buttons button.active {
+  color: white;
+  background: #333;
+}

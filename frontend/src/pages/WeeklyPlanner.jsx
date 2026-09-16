@@ -70,8 +70,10 @@ const WeeklyPlanner = () => {
   const [showModal, setShowModal] = useState(false);
   const [creating, setCreating] = useState(false);
   const [editingPlanner, setEditingPlanner] = useState(null);
-
   const initialWeek = calculateWeekDates("This week");
+
+  const [search, setSearch] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -191,39 +193,55 @@ const WeeklyPlanner = () => {
   const filteredPlanners = useMemo(() => {
     const safePlanners = Array.isArray(planners) ? planners : [];
 
-    const today = getDateOnly(new Date());
-    const currentWeekStart = getStartOfWeek(today);
+    let result = [...safePlanners];
 
-    let weekStart = null;
+    // =========================
+    // SUBJECT FILTER
+    // =========================
+    if (subject !== "All") {
+      result = result.filter((planner) => planner.subject === subject);
+    }
 
+    // =========================
+    // WEEK FILTER
+    // =========================
     if (weekFilter === "This week") {
-      weekStart = currentWeekStart;
+      const monday = getMonday(new Date());
+      const weekStart = formatDateInput(monday);
+
+      result = result.filter(
+        (planner) => formatDateInput(new Date(planner.weekStart)) === weekStart,
+      );
     }
 
-    if (weekFilter === "Next week") {
-      weekStart = new Date(currentWeekStart);
-      weekStart.setDate(weekStart.getDate() + 7);
+    // =========================
+    // SEARCH
+    // =========================
+    if (search.trim() !== "") {
+      const searchText = search.toLowerCase().trim();
+
+      result = result.filter((planner) => {
+        const title = planner.title?.toLowerCase() || "";
+        const subjectName = planner.subject?.toLowerCase() || "";
+
+        return title.includes(searchText) || subjectName.includes(searchText);
+      });
     }
 
-    if (weekFilter === "Previous week") {
-      weekStart = new Date(currentWeekStart);
-      weekStart.setDate(weekStart.getDate() - 7);
-    }
+    // =========================
+    // SORT
+    // =========================
+    result.sort((a, b) => {
+      const titleA = a.title?.toLowerCase() || "";
+      const titleB = b.title?.toLowerCase() || "";
 
-    return safePlanners.filter((planner) => {
-      if (subject !== "All" && planner.subject !== subject) {
-        return false;
-      }
-
-      if (!weekStart) {
-        return true;
-      }
-
-      const plannerStart = getDateOnly(planner.weekStart);
-
-      return isSameDay(plannerStart, weekStart);
+      return sortOrder === "asc"
+        ? titleA.localeCompare(titleB)
+        : titleB.localeCompare(titleA);
     });
-  }, [planners, subject, weekFilter]);
+
+    return result;
+  }, [planners, subject, weekFilter, search, sortOrder]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -425,20 +443,41 @@ const WeeklyPlanner = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center justify-between gap-3 border-b border-white/10 px-6 py-4">
             <div className="flex items-center gap-2">
-              <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
+              <button
+                className="rounded-lg p-2 text-gray-400 hover:bg-white/10"
+                onClick={() => {
+                  setSubject("All");
+                  setSearch("");
+                }}
+              >
                 <Filter size={18} />
               </button>
 
-              <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
+              <button
+                className="rounded-lg p-2 text-gray-400 hover:bg-white/10"
+                onClick={() =>
+                  setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+                }
+                title={sortOrder === "asc" ? "Ascending" : "Descending"}
+              >
                 <ArrowUpDown size={18} />
-              </button>
-
-              <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
-                <Sparkles size={18} />
+                <span>{sortOrder === "asc" ? "A → Z" : "Z → A"}</span>
               </button>
 
               <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
                 <Search size={18} />
+                <input
+                  type="text"
+                  placeholder="Search chapters..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+
+                {search && (
+                  <button onClick={() => setSearch("")}>
+                    <X size={16} />
+                  </button>
+                )}
               </button>
 
               <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
