@@ -482,11 +482,6 @@ const WeeklyPlanner = () => {
 
               <option value="All weeks">All weeks</option>
             </select>
-
-            <button className="flex items-center gap-1 px-3 py-2 text-sm text-gray-400">
-              <Plus size={16} />
-              Filter
-            </button>
           </div>
         </div>
 
@@ -819,7 +814,7 @@ const ChapterCard = ({
         <button
           type="button"
           onClick={() => openEditModal(planner)}
-          className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/20"
+          className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/60 hover:cursor-pointer"
         >
           Edit
         </button>
@@ -827,7 +822,7 @@ const ChapterCard = ({
         <button
           type="button"
           onClick={() => deletePlanner(planner._id)}
-          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/10"
+          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/40 hover:cursor-pointer"
         >
           Delete
         </button>
