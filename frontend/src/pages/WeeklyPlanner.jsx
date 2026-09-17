@@ -443,17 +443,8 @@ const WeeklyPlanner = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center justify-between gap-3 border-b border-white/10 px-6 py-4">
             <div className="flex items-center gap-2">
-              <button
-                className="rounded-lg p-2 text-gray-400 hover:bg-white/10"
-                onClick={() => {
-                  setSubject("All");
-                  setSearch("");
-                }}
-              >
-                <Filter size={18} />
-              </button>
-
-              <button
+              
+            <button
                 className="rounded-lg p-2 text-gray-400 hover:bg-white/10"
                 onClick={() =>
                   setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
@@ -478,10 +469,6 @@ const WeeklyPlanner = () => {
                     <X size={16} />
                   </button>
                 )}
-              </button>
-
-              <button className="rounded-lg p-2 text-gray-400 hover:bg-white/10">
-                <SlidersHorizontal size={18} />
               </button>
 
               <button
