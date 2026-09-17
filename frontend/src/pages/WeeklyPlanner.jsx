@@ -444,7 +444,7 @@ const WeeklyPlanner = () => {
           <div className="flex items-center justify-between gap-3 border-b border-white/10 px-6 py-4">
             <div className="flex items-center gap-2">
               <button
-                className="rounded-md bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10"
+                className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10"
                 onClick={() =>
                   setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
                 }
@@ -454,7 +454,7 @@ const WeeklyPlanner = () => {
                 <span>{sortOrder === "asc" ? "A → Z" : "Z → A"}</span>
               </button>
 
-              <button className="rounded-md bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10">
+              <button className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10">
                 <Search size={18} />
                 <input
                   type="text"
@@ -485,7 +485,7 @@ const WeeklyPlanner = () => {
             <select
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="rounded-lg bg-[#193b5c] px-3 py-2 text-sm text-[#55aaff] outline-none"
+              className="rounded-lg bg-[#193b5c] px-4 py-2 text-sm text-[#55aaff] outline-none"
             >
               <option value="All">All Subjects</option>
               <option value="Physics">Physics</option>
@@ -497,7 +497,7 @@ const WeeklyPlanner = () => {
             <select
               value={weekFilter}
               onChange={(e) => setWeekFilter(e.target.value)}
-              className="rounded-lg border-none bg-[#193b5c] px-3 py-2 text-sm text-[#55aaff] outline-none"
+              className="rounded-lg border-none bg-[#193b5c] px-4 py-2 text-sm text-[#55aaff] outline-none"
             >
               <option value="This week">This week</option>
 
@@ -706,7 +706,7 @@ const WeeklyPlanner = () => {
                     <button
                       type="button"
                       onClick={addTask}
-                      className="flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20"
+                      className="flex items-center gap-1.5 rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20 active:scale-[95%]"
                     >
                       <Plus size={16} />
                       Add
@@ -718,7 +718,7 @@ const WeeklyPlanner = () => {
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="rounded-lg px-4 py-2.5 text-sm text-gray-400 hover:bg-white/10 hover:text-white"
+                    className="rounded-lg px-4 py-2.5 text-sm text-gray-400 hover:bg-white/10 hover:text-white active:scale-[95%]"
                   >
                     Cancel
                   </button>
@@ -726,7 +726,7 @@ const WeeklyPlanner = () => {
                   <button
                     type="submit"
                     disabled={creating}
-                    className="rounded-lg bg-[#2383e2] px-5 py-2.5 text-sm font-medium transition hover:bg-[#1d6fbd] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg bg-[#2383e2] px-5 py-2.5 text-sm font-medium transition hover:bg-[#1d6fbd] disabled:cursor-not-allowed disabled:opacity-50 active:scale-[95%]"
                   >
                     {creating
                       ? "Saving..."
@@ -839,7 +839,7 @@ const ChapterCard = ({
         <button
           type="button"
           onClick={() => openEditModal(planner)}
-          className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/60 hover:cursor-pointer"
+          className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/60 hover:cursor-pointer active:scale-[95%]"
         >
           Edit
         </button>
@@ -847,7 +847,7 @@ const ChapterCard = ({
         <button
           type="button"
           onClick={() => deletePlanner(planner._id)}
-          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/40 hover:cursor-pointer"
+          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/40 hover:cursor-pointer active:scale-[95%]"
         >
           Delete
         </button>
