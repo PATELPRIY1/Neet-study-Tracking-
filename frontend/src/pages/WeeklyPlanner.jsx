@@ -847,7 +847,7 @@ const ChapterCard = ({
         <button
           type="button"
           onClick={() => deletePlanner(planner._id)}
-          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/40 hover:cursor-pointer active:scale-[95%]"
+          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/20 hover:cursor-pointer active:scale-[95%]"
         >
           Delete
         </button>
