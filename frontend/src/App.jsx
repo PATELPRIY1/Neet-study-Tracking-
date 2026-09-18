@@ -75,12 +75,12 @@ const App = () => {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/create-task" element={<AddTask />} />
-            <Route path="/create-day-task" element={<AddDayTask />} />
-            <Route path="/view-task" element={<ViewTask />} />
-            <Route path="/view-day-by-task" element={<ViewDayByTask />} />
+            <Route path="/task" element={<AddTask />} />
+            {/* <Route path="/create-day-task" element={<AddDayTask />} /> */}
+            {/* <Route path="/task" element={<ViewTask />} /> */}
+            {/* <Route path="/view-day-by-task" element={<ViewDayByTask />} />
             <Route path="/update-day-task/:id" element={<UpdateDayTask />} />
-            <Route path="/getdaytaskby/:id" element={<UpdateTask />} />
+            <Route path="/getdaytaskby/:id" element={<UpdateTask />} /> */}
             <Route path="/weekly-planner" element={<WeeklyPlanner/>} />
           </Route>
         </Route>
