@@ -7,15 +7,15 @@ import {
 } from "react-router-dom";
 
 import AddTask from "./pages/AddTask";
-import AddDayTask from "./pages/AddDayTask";
-import ViewTask from "./pages/ViewTask";
-import UpdateTask from "./pages/UpdateTask";
-import UpdateDayTask from "./pages/UpdateDayTask";
+// import AddDayTask from "./pages/AddDayTask";
+// import ViewTask from "./pages/ViewTask";
+// import UpdateTask from "./pages/UpdateTask";
+// import UpdateDayTask from "./pages/UpdateDayTask";
 import Dashboard from "./pages/Dashboard";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import ViewDayByTask from "./pages/ViewDayByTask";
+// import ViewDayByTask from "./pages/ViewDayByTask";
 import Registration from "./pages/Registration";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
