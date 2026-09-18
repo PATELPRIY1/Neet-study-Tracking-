@@ -74,11 +74,6 @@ const AddTask = () => {
   const savePlanner = async (e) => {
     e.preventDefault();
 
-    if (!formData.title.trim()) {
-      alert("Please enter a chapter title.");
-      return;
-    }
-
     if (taskNames.length === 0) {
       alert("Please add at least one checklist item.");
       return;
@@ -418,19 +413,6 @@ const AddTask = () => {
 
               <form onSubmit={savePlanner} className="p-6">
                 <div className="space-y-5">
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-300">
-                      Chapter title
-                    </label>
-                    <input
-                      type="text"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleInputChange}
-                      placeholder="Enter chapter title"
-                      className="w-full rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none placeholder:text-gray-500"
-                    />
-                  </div>
 
                   <div>
                     <label className="mb-2 block text-sm text-gray-300">
