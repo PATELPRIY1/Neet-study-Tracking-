@@ -30,4 +30,10 @@ test
 coverage
 node_modules
 dist
+AddTask.jsx
+AddDayTask.jsx
+UploadTask.jsx
+UpdateDayTask.jsx
+ViewDayByTask.jsx
+ViewTask.jsx
 

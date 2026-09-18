@@ -1,16 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  CalendarDays,
   ChevronDown,
-  FileText,
-  Filter,
   Search,
-  SlidersHorizontal,
   ArrowUpDown,
-  Sparkles,
   Plus,
-  Atom,
-  Dna,
   X,
   Trash2,
 } from "lucide-react";
