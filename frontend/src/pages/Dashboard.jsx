@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import IndexLineChart from "../components/LineChart";
 import api from "../api/axios";
 
+const isTaskCompleted = (task) =>
+  task?.completed === true ||
+  task?.done === true ||
+  String(task?.status || task?.done || "").toLowerCase() === "completed";
+
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [weeklyPlanner, setWeeklyPlanner] = useState([]);
@@ -11,25 +16,28 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const [taskRes, weeklyPlannerRes] = await Promise.all([
-          api.get("/task"),
-          api.get("/weekly-planner"),
+          api.get("/api/task"),
+          api.get("/api/weekly-planner"),
         ]);
 
-        // console.log("Tasks:", taskRes.data);
-        // console.log("Weekly Planner:", weeklyPlannerRes.data);
-
-        const fetchedTasks = Array.isArray(taskRes.data.tasks)
-          ? taskRes.data.tasks
-          : [];
+        const fetchedTasks = Array.isArray(taskRes.data)
+          ? taskRes.data
+          : Array.isArray(taskRes.data?.tasks)
+            ? taskRes.data.tasks
+            : [];
 
         const fetchedWeeklyPlanner = Array.isArray(weeklyPlannerRes.data)
           ? weeklyPlannerRes.data
-          : [];
+          : Array.isArray(weeklyPlannerRes.data?.weeklyPlanner)
+            ? weeklyPlannerRes.data.weeklyPlanner
+            : [];
 
         setTasks(fetchedTasks);
         setWeeklyPlanner(fetchedWeeklyPlanner);
       } catch (error) {
         console.error("Dashboard data error:", error);
+        setTasks([]);
+        setWeeklyPlanner([]);
       } finally {
         setLoading(false);
       }
@@ -39,25 +47,22 @@ const Dashboard = () => {
   }, []);
 
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(
-    (task) => task.status === "completed",
-  ).length;
-  const pendingTasks = tasks.filter(
-    (task) => task.status !== "completed",
-  ).length;
+  const completedTasks = tasks.filter(isTaskCompleted).length;
+  const pendingTasks = tasks.filter((task) => !isTaskCompleted(task)).length;
+
   const totalDayTasks = weeklyPlanner.length;
-
+  const completedDayTasks = weeklyPlanner.filter((task) =>
+    isTaskCompleted(task),
+  ).length;
   const pendingDayTasks = weeklyPlanner.filter(
-    (task) => task.done !== "completed",
+    (task) => !isTaskCompleted(task),
   ).length;
 
-  const completedDayTasks = weeklyPlanner.filter(
-    (task) => task.done === "completed",
-  ).length;
   const dayTaskCompletionPercent =
     totalDayTasks === 0
       ? 0
       : Math.round((completedDayTasks / totalDayTasks) * 100);
+
   const completionPercent =
     totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
@@ -67,6 +72,7 @@ const Dashboard = () => {
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <p className="text-sm">Overview of your tasks and daily tracking.</p>
       </div>
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
           <p className="text-sm uppercase tracking-[0.2em]">Total Tasks</p>
@@ -75,6 +81,7 @@ const Dashboard = () => {
             All tasks added in the system.
           </p>
         </div>
+
         <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
           <p className="text-sm uppercase tracking-[0.2em]">Completed</p>
           <p className="mt-4 text-4xl font-semibold">{completedTasks}</p>
@@ -82,6 +89,7 @@ const Dashboard = () => {
             Tasks marked as completed.
           </p>
         </div>
+
         <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
           <p className="text-sm uppercase tracking-[0.2em]">Pending</p>
           <p className="mt-4 text-4xl font-semibold">{pendingTasks}</p>
@@ -89,12 +97,12 @@ const Dashboard = () => {
             Tasks still pending review or completion.
           </p>
         </div>
+
         <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
           <p className="text-sm uppercase tracking-[0.2em]">Day Tasks</p>
           <p className="mt-4 text-4xl font-semibold">
             {completedDayTasks}/{totalDayTasks}
           </p>
-
           <p className="mt-2 text-sm text-(--secondary-color)">
             Daily study tasks available.
           </p>
@@ -123,6 +131,7 @@ const Dashboard = () => {
             />
           </div>
         </div>
+
         <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -160,17 +169,17 @@ const Dashboard = () => {
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {tasks.slice(0, 6).map((taskItem) => (
               <div
-                key={taskItem._id}
+                key={taskItem._id || taskItem.id}
                 className="rounded-3xl bg-(--bg-transparent-2-color) p-4"
               >
                 <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
                   {taskItem.subject || "Unknown"}
                 </p>
                 <h3 className="mt-2 text-lg font-semibold">
-                  {taskItem.topic || "No topic"}
+                  {taskItem.title || taskItem.topic || "No topic"}
                 </h3>
                 <p className="mt-3 text-sm text-gray-300">
-                  Status: {taskItem.status || "pending"}
+                  Status: {taskItem.status || (isTaskCompleted(taskItem) ? "completed" : "pending")}
                 </p>
               </div>
             ))}

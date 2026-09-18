@@ -3,7 +3,6 @@ import { AddTask, DashboardCustomize, TaskAlt } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import axios from "../api/axios";
 
-
 const Sidebar = () => {
   const [user, setUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
@@ -13,7 +12,14 @@ const Sidebar = () => {
       const userRes = await axios.get("/api/auth/user", {
         withCredentials: true,
       });
-      setUser(userRes.data.User);
+
+      const userData =
+        userRes?.data?.user ||
+        userRes?.data?.User ||
+        userRes?.data ||
+        null;
+
+      setUser(userData);
     } catch (error) {
       console.error("Error fetching user data:", error);
       setUser(null);
@@ -31,6 +37,7 @@ const Sidebar = () => {
       <h2 className="text-xl font-medium">
         {loading ? "Loading..." : user?.username || "Not Logged In"}
       </h2>
+
       <div className="flex md:flex-col flex-row flex-wrap gap-4">
         <Link
           to="/"
@@ -38,12 +45,14 @@ const Sidebar = () => {
         >
           <DashboardCustomize /> Dashboard
         </Link>
+
         <Link
           to="/task"
           className="text-lg flex gap-3 font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors"
         >
           <AddTask /> Task
         </Link>
+
         <Link
           to="/weekly-planner"
           className="text-lg flex gap-3 font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors"

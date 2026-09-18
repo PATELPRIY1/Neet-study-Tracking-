@@ -19,7 +19,12 @@ const prepareChartData = (tasks) => {
   let pending = 0;
 
   return tasks.map((task, index) => {
-    if (task.done === "completed") {
+    const isCompleted =
+      task?.completed === true ||
+      task?.done === true ||
+      String(task?.done || task?.status || "").toLowerCase() === "completed";
+
+    if (isCompleted) {
       completed++;
     } else {
       pending++;
@@ -39,18 +44,17 @@ export default function IndexLineChart() {
   useEffect(() => {
     const fetchDayTasks = async () => {
       try {
-        const response = await api.get("/api/tasks");
+        const response = await api.get("/api/task");
 
-        // console.log("LineChart day tasks response:", response.data);
-
-        const data = response.data;
+        const data = response?.data;
 
         const processedData = Array.isArray(data)
           ? data
           : Array.isArray(data?.tasks)
             ? data.tasks
-            : [];
-
+            : Array.isArray(data?.planners)
+              ? data.planners.flatMap((planner) => planner.tasks || [])
+              : [];
 
         setDayTasks(processedData);
       } catch (error) {
@@ -74,7 +78,6 @@ export default function IndexLineChart() {
           />
 
           <XAxis dataKey="name" stroke="#ccc" />
-
           <YAxis stroke="#ccc" />
 
           <Tooltip
