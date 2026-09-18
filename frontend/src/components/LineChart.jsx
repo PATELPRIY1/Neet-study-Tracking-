@@ -39,7 +39,7 @@ export default function IndexLineChart() {
   useEffect(() => {
     const fetchDayTasks = async () => {
       try {
-        const response = await api.get("/api/getdaytasks");
+        const response = await api.get("/api/tasks");
 
         // console.log("LineChart day tasks response:", response.data);
 
@@ -47,11 +47,10 @@ export default function IndexLineChart() {
 
         const processedData = Array.isArray(data)
           ? data
-          : Array.isArray(data?.daytasks)
-            ? data.daytasks
-            : Array.isArray(data?.tasks)
-              ? data.tasks
-              : [];
+          : Array.isArray(data?.tasks)
+            ? data.tasks
+            : [];
+
 
         setDayTasks(processedData);
       } catch (error) {

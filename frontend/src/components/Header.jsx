@@ -6,25 +6,25 @@ import Swal from "sweetalert2";
 import api from "../api/axios";
 
 const Header = () => {
-  const [dayTasks, setDayTasks] = useState([]);
+  const [Tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const dayTaskRes = await api.get("/api/getdaytasks");
+        const dayTaskRes = await api.get("/api/tasks");
 
         const responseData = dayTaskRes?.data || [];
         const fetchedDayTasks = Array.isArray(responseData)
           ? responseData
-          : Array.isArray(responseData.daytasks)
-            ? responseData.daytasks
+          : Array.isArray(responseData.tasks)
+            ? responseData.tasks
             : [];
 
-        setDayTasks(fetchedDayTasks);
+        setTasks(fetchedTasks);
       } catch (error) {
         console.error("Error loading dashboard data:", error);
-        setDayTasks([]);
+        setTasks([]);
       } finally {
         setLoading(false);
       }
@@ -33,10 +33,10 @@ const Header = () => {
     fetchData();
   }, []);
 
-  const totalDayTasks = dayTasks.length;
+  const totalDayTasks = Tasks.length;
   // console.log("Total Day Tasks:", totalDayTasks);
 
-  const completedDayTasks = dayTasks.filter(
+  const completedDayTasks = Tasks.filter(
     (task) => task.done === "completed",
   ).length;
 
