@@ -1,3 +1,5 @@
+// ...existing code...
+
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ChevronDown,
@@ -12,6 +14,16 @@ import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
 import api from "../api/axios";
 
+const DEFAULT_TASKS = [
+  { name: "Notes Rev", completed: false },
+  { name: "NCERT Rev", completed: false },
+];
+
+const EMPTY_FORM = {
+  subject: "Physics",
+  title: "",
+};
+
 const AddTask = () => {
   const [planners, setPlanners] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,16 +37,11 @@ const AddTask = () => {
   const [search, setSearch] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
 
-  const [taskNames, setTaskNames] = useState([
-    {
-      name: "Notes Rev",
-      completed: false,
-    },
-    {
-      name: "NCERT Rev",
-      completed: false,
-    },
-  ]);
+  const [formData, setFormData] = useState(EMPTY_FORM);
+
+  const [taskNames, setTaskNames] = useState(DEFAULT_TASKS);
+
+  const [newTaskName, setNewTaskName] = useState("");
 
   const addTask = () => {
     const name = newTaskName.trim();
@@ -56,32 +63,21 @@ const AddTask = () => {
     setTaskNames((prev) => prev.filter((_, taskIndex) => taskIndex !== index));
   };
 
-  const [newTaskName, setNewTaskName] = useState("");
-
   const openCreateModal = () => {
     setEditingPlanner(null);
-
-    setFormData({
-      subject: "Physics",
-    });
-
-    setTaskNames([
-      {
-        name: "Notes Rev",
-        completed: false,
-      },
-      {
-        name: "NCERT Rev",
-        completed: false,
-      },
-    ]);
-
+    setFormData({ ...EMPTY_FORM });
+    setTaskNames(DEFAULT_TASKS.map((task) => ({ ...task })));
     setNewTaskName("");
     setShowModal(true);
   };
 
   const savePlanner = async (e) => {
     e.preventDefault();
+
+    if (!formData.title.trim()) {
+      alert("Please enter a chapter title.");
+      return;
+    }
 
     if (taskNames.length === 0) {
       alert("Please add at least one checklist item.");
@@ -225,22 +221,8 @@ const AddTask = () => {
   const closeModal = () => {
     setShowModal(false);
     setEditingPlanner(null);
-
-    setFormData({
-      subject: "Physics",
-    });
-
-    setTaskNames([
-      {
-        name: "Notes Rev",
-        completed: false,
-      },
-      {
-        name: "NCERT Rev",
-        completed: false,
-      },
-    ]);
-
+    setFormData({ ...EMPTY_FORM });
+    setTaskNames(DEFAULT_TASKS.map((task) => ({ ...task })));
     setNewTaskName("");
   };
 
@@ -249,6 +231,7 @@ const AddTask = () => {
 
     setFormData({
       subject: planner.subject || "Physics",
+      title: planner.title || "",
     });
 
     setTaskNames(
@@ -270,23 +253,24 @@ const AddTask = () => {
 
     let result = [...safePlanners];
 
-    // SUBJECT FILTER
     if (subject !== "All") {
       result = result.filter((planner) => planner.subject === subject);
     }
 
-    // SEARCH
     if (search.trim()) {
       const searchText = search.toLowerCase().trim();
 
       result = result.filter((planner) => {
         const plannerSubject = planner.subject?.toLowerCase() || "";
+        const plannerTitle = planner.title?.toLowerCase() || "";
 
-        return plannerSubject.includes(searchText);
+        return (
+          plannerSubject.includes(searchText) ||
+          plannerTitle.includes(searchText)
+        );
       });
     }
 
-    // SORT
     result.sort((a, b) => {
       const subjectA = a.subject?.toLowerCase() || "";
       const subjectB = b.subject?.toLowerCase() || "";
@@ -388,7 +372,7 @@ const AddTask = () => {
 
         <main className="p-6">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {filteredPlanners.map((planner) => (
+            {filteredPlanners.map((planner, index) => (
               <ChapterCard
                 key={planner._id}
                 planner={planner}
@@ -431,6 +415,127 @@ const AddTask = () => {
                   <X size={20} />
                 </button>
               </div>
+
+              <form onSubmit={savePlanner} className="p-6">
+                <div className="space-y-5">
+                  <div>
+                    <label className="mb-2 block text-sm text-gray-300">
+                      Chapter title
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      placeholder="Enter chapter title"
+                      className="w-full rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none placeholder:text-gray-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm text-gray-300">
+                      Subject
+                    </label>
+                    <select
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      className="w-full rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none"
+                    >
+                      <option value="Physics">Physics</option>
+                      <option value="Chemistry">Chemistry</option>
+                      <option value="Botany">Botany</option>
+                      <option value="Zoology">Zoology</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <div className="mb-3 flex items-center justify-between">
+                      <label className="text-sm text-gray-300">
+                        Checklist items
+                      </label>
+                    </div>
+
+                    <div className="space-y-2">
+                      {taskNames.length === 0 ? (
+                        <div className="rounded-lg border border-dashed border-white/10 px-3 py-4 text-sm text-gray-500">
+                          No checklist items yet
+                        </div>
+                      ) : (
+                        taskNames.map((task, index) => (
+                          <div
+                            key={`${task.name}-${index}`}
+                            className="flex items-center gap-2"
+                          >
+                            <input
+                              type="text"
+                              value={task.name}
+                              onChange={(e) =>
+                                setTaskNames((prev) =>
+                                  prev.map((item, taskIndex) =>
+                                    taskIndex === index
+                                      ? { ...item, name: e.target.value }
+                                      : item,
+                                  ),
+                                )
+                              }
+                              className="flex-1 rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none"
+                            />
+
+                            <button
+                              type="button"
+                              onClick={() => removeTask(index)}
+                              className="rounded-lg bg-red-500/10 p-2 text-red-400 hover:bg-red-500/20"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    <div className="mt-3 flex gap-2">
+                      <input
+                        type="text"
+                        value={newTaskName}
+                        onChange={(e) => setNewTaskName(e.target.value)}
+                        placeholder="Add a task"
+                        className="flex-1 rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none placeholder:text-gray-500"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={addTask}
+                        className="rounded-lg bg-white/10 px-4 py-2 text-sm text-gray-200 hover:bg-white/15"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="rounded-lg border border-white/10 px-4 py-2 text-sm text-gray-300 hover:bg-white/5"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={creating}
+                    className="rounded-lg bg-[#4caf7d] px-4 py-2 text-sm font-medium text-white hover:bg-[#57b88b] disabled:opacity-70"
+                  >
+                    {creating
+                      ? "Saving..."
+                      : editingPlanner
+                        ? "Save Changes"
+                        : "Create Chapter"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
