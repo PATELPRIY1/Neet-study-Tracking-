@@ -4,32 +4,30 @@ import api from "../api/axios";
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
-  const [dayTasks, setDayTasks] = useState([]);
+  const [weeklyPlanner, setWeeklyPlanner] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [taskRes, dayTaskRes] = await Promise.all([
-          api.get("/api/get-task"),
-          api.get("/api/getdaytasks"),
+        const [taskRes, weeklyPlannerRes] = await Promise.all([
+          api.get("/api/task"),
+          api.get("/api/weekly-planner"),
         ]);
 
         // console.log("Tasks:", taskRes.data);
-        // console.log("Day Tasks:", dayTaskRes.data);
+        // console.log("Weekly Planner:", weeklyPlannerRes.data);
 
         const fetchedTasks = Array.isArray(taskRes.data.tasks)
           ? taskRes.data.tasks
           : [];
 
-        const fetchedDayTasks = Array.isArray(dayTaskRes.data)
-          ? dayTaskRes.data
-          : Array.isArray(dayTaskRes.data.daytasks)
-          ? dayTaskRes.data.daytasks
+        const fetchedWeeklyPlanner = Array.isArray(weeklyPlannerRes.data)
+          ? weeklyPlannerRes.data
           : [];
 
         setTasks(fetchedTasks);
-        setDayTasks(fetchedDayTasks);
+        setWeeklyPlanner(fetchedWeeklyPlanner);
       } catch (error) {
         console.error("Dashboard data error:", error);
       } finally {
@@ -47,13 +45,13 @@ const Dashboard = () => {
   const pendingTasks = tasks.filter(
     (task) => task.status !== "completed",
   ).length;
-  const totalDayTasks = dayTasks.length;
+  const totalDayTasks = weeklyPlanner.length;
 
-  const pendingDayTasks = dayTasks.filter(
+  const pendingDayTasks = weeklyPlanner.filter(
     (task) => task.done !== "completed",
   ).length;
 
-  const completedDayTasks = dayTasks.filter(
+  const completedDayTasks = weeklyPlanner.filter(
     (task) => task.done === "completed",
   ).length;
   const dayTaskCompletionPercent =

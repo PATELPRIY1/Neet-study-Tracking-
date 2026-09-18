@@ -39,22 +39,10 @@ const Sidebar = () => {
           <DashboardCustomize /> Dashboard
         </Link>
         <Link
-          to="/create-task"
+          to="/task"
           className="text-lg flex gap-3 font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors"
         >
-          <AddTask /> Add Task
-        </Link>
-        <Link
-          to="/create-day-task"
-          className="text-lg flex gap-3 font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors"
-        >
-          <AddTask /> Add Day Task
-        </Link>
-        <Link
-          to="/view-task"
-          className="text-lg flex gap-3 font-medium hover:text-(--secondary-color) active:scale-98 active:text-(--secondary-color) cursor-pointer transition-colors"
-        >
-          <TaskAlt /> View Task
+          <AddTask /> Task
         </Link>
         <Link
           to="/weekly-planner"
