@@ -183,7 +183,7 @@ const AddTask = () => {
         }),
       );
 
-      await api.patch(`/api/task/${plannerId}/task/${taskId}`, {
+      await api.patch(`/task/${plannerId}/task/${taskId}`, {
         completed,
       });
     } catch (error) {
@@ -201,7 +201,7 @@ const AddTask = () => {
     if (!confirmed) return;
 
     try {
-      await api.delete(`/api/task/${plannerId}`);
+      await api.delete(`/task/${plannerId}`);
 
       setPlanners((previous) =>
         previous.filter((planner) => planner._id !== plannerId),
@@ -319,8 +319,9 @@ const AddTask = () => {
                 <span>{sortOrder === "asc" ? "A → Z" : "Z → A"}</span>
               </button>
 
-              <button className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10">
+              <div className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] flex items-center gap-2 px-3 py-2 text-sm text-gray-400">
                 <Search size={18} />
+
                 <input
                   type="text"
                   placeholder="Search chapters..."
@@ -338,7 +339,7 @@ const AddTask = () => {
                     <X size={16} />
                   </button>
                 )}
-              </button>
+              </div>
 
               <button
                 onClick={openCreateModal}
@@ -413,7 +414,6 @@ const AddTask = () => {
 
               <form onSubmit={savePlanner} className="p-6">
                 <div className="space-y-5">
-
                   <div>
                     <label className="mb-2 block text-sm text-gray-300">
                       Subject
@@ -549,7 +549,7 @@ const ChapterCard = ({
       </h2>
 
       <div className="mt-4 flex items-center gap-3">
-        <span className="min-w-[45px] text-sm">{progress}.0%</span>
+        <span className="min-w-[45px] text-sm">{progress}0%</span>
 
         <div className="h-1 flex-1 rounded-full bg-[#373737]">
           <div
