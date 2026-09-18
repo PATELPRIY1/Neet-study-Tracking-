@@ -11,8 +11,8 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const [taskRes, weeklyPlannerRes] = await Promise.all([
-          api.get("/api/task"),
-          api.get("/api/weekly-planner"),
+          api.get("/task"),
+          api.get("/weekly-planner"),
         ]);
 
         // console.log("Tasks:", taskRes.data);

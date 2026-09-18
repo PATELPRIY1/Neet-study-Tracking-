@@ -100,7 +100,7 @@ const AddTask = () => {
       let response;
 
       if (editingPlanner) {
-        response = await api.put(`/api/task/${editingPlanner._id}`, data);
+        response = await api.put(`/task/${editingPlanner._id}`, data);
 
         setPlanners((previous) =>
           previous.map((planner) =>
@@ -110,7 +110,7 @@ const AddTask = () => {
           ),
         );
       } else {
-        response = await api.post("/api/task", data);
+        response = await api.post("/task", data);
 
         setPlanners((previous) => [...previous, response.data.planner]);
       }
@@ -129,7 +129,7 @@ const AddTask = () => {
     try {
       setLoading(true);
 
-      const response = await api.get("/api/task");
+      const response = await api.get("/task");
 
       const data = response.data;
 
