@@ -201,7 +201,7 @@ const AddTask = () => {
     if (!confirmed) return;
 
     try {
-      await api.delete(`/task/${plannerId}`);
+      await api.delete(`/api/task/${plannerId}`);
 
       setPlanners((previous) =>
         previous.filter((planner) => planner._id !== plannerId),
