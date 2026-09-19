@@ -95,7 +95,7 @@ const AddTask = () => {
       let response;
 
       if (editingPlanner) {
-        response = await api.put(`/task/${editingPlanner._id}`, data);
+        response = await api.put(`/api/task/${editingPlanner._id}`, data);
 
         setPlanners((previous) =>
           previous.map((planner) =>
@@ -124,7 +124,7 @@ const AddTask = () => {
     try {
       setLoading(true);
 
-      const response = await api.get("/task");
+      const response = await api.get("/api/task");
 
       const data = response.data;
 
@@ -183,7 +183,7 @@ const AddTask = () => {
         }),
       );
 
-      await api.patch(`/task/${plannerId}/task/${taskId}`, {
+      await api.patch(`/api/task/${plannerId}/task/${taskId}`, {
         completed,
       });
     } catch (error) {
