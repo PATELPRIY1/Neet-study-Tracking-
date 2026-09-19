@@ -5,15 +5,9 @@ const taskModel = require("../models/task.model");
 // ==============================
 const createTask = async (req, res) => {
   try {
-    const { title, subject, tasks } = req.body;
+    const { subject, tasks } = req.body;
 
     const userId = req.user.id;
-
-    if (!title?.trim()) {
-      return res.status(400).json({
-        message: "Chapter title is required",
-      });
-    }
 
     if (!subject) {
       return res.status(400).json({
@@ -23,7 +17,6 @@ const createTask = async (req, res) => {
 
     const task = await taskModel.create({
       userId,
-      title: title.trim(),
       subject,
       tasks: Array.isArray(tasks) ? tasks : [],
     });
