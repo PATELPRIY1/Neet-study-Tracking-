@@ -1,11 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import IndexLineChart from "../components/LineChart";
 import api from "../api/axios";
-
-const isTaskCompleted = (task) =>
-  task?.completed === true ||
-  task?.done === true ||
-  String(task?.status || task?.done || "").toLowerCase() === "completed";
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -20,22 +15,38 @@ const Dashboard = () => {
           api.get("/api/weekly-planner"),
         ]);
 
-        const fetchedTasks = Array.isArray(taskRes.data)
-          ? taskRes.data
-          : Array.isArray(taskRes.data?.tasks)
-            ? taskRes.data.tasks
+        // -----------------------------
+        // TASKS
+        // -----------------------------
+        const taskData = taskRes.data;
+
+        const fetchedTasks = Array.isArray(taskData)
+          ? taskData
+          : Array.isArray(taskData?.tasks)
+            ? taskData.tasks
             : [];
 
-        const fetchedWeeklyPlanner = Array.isArray(weeklyPlannerRes.data)
-          ? weeklyPlannerRes.data
-          : Array.isArray(weeklyPlannerRes.data?.weeklyPlanner)
-            ? weeklyPlannerRes.data.weeklyPlanner
-            : [];
+        // -----------------------------
+        // WEEKLY PLANNER
+        // -----------------------------
+        const plannerData = weeklyPlannerRes.data;
+
+        const fetchedWeeklyPlanner = Array.isArray(plannerData)
+          ? plannerData
+          : Array.isArray(plannerData?.planners)
+            ? plannerData.planners
+            : Array.isArray(plannerData?.weeklyPlanner)
+              ? plannerData.weeklyPlanner
+              : [];
 
         setTasks(fetchedTasks);
         setWeeklyPlanner(fetchedWeeklyPlanner);
       } catch (error) {
-        console.error("Dashboard data error:", error);
+        console.error(
+          "Dashboard data error:",
+          error.response?.data || error,
+        );
+
         setTasks([]);
         setWeeklyPlanner([]);
       } finally {
@@ -46,152 +57,411 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(isTaskCompleted).length;
-  const pendingTasks = tasks.filter((task) => !isTaskCompleted(task)).length;
+  // ==========================================
+  // ALL CHECKLIST TASKS
+  // ==========================================
 
-  const totalDayTasks = weeklyPlanner.length;
-  const completedDayTasks = weeklyPlanner.filter((task) =>
-    isTaskCompleted(task),
+  const allTasks = useMemo(() => {
+    return tasks.flatMap((chapter) =>
+      Array.isArray(chapter.tasks) ? chapter.tasks : [],
+    );
+  }, [tasks]);
+
+  // ==========================================
+  // TASK STATISTICS
+  // ==========================================
+
+  const totalTasks = allTasks.length;
+
+  const completedTasks = allTasks.filter(
+    (task) => task.completed === true,
   ).length;
-  const pendingDayTasks = weeklyPlanner.filter(
-    (task) => !isTaskCompleted(task),
+
+  const pendingTasks = totalTasks - completedTasks;
+
+  const completionPercent =
+    totalTasks === 0
+      ? 0
+      : Math.round((completedTasks / totalTasks) * 100);
+
+  // ==========================================
+  // CHAPTER STATISTICS
+  // ==========================================
+
+  const totalChapters = tasks.length;
+
+  // ==========================================
+  // WEEKLY PLANNER TASKS
+  // ==========================================
+
+  const allWeeklyTasks = useMemo(() => {
+    return weeklyPlanner.flatMap((planner) =>
+      Array.isArray(planner.tasks) ? planner.tasks : [],
+    );
+  }, [weeklyPlanner]);
+
+  const totalDayTasks = allWeeklyTasks.length;
+
+  const completedDayTasks = allWeeklyTasks.filter(
+    (task) => task.completed === true,
   ).length;
+
+  const pendingDayTasks = totalDayTasks - completedDayTasks;
 
   const dayTaskCompletionPercent =
     totalDayTasks === 0
       ? 0
       : Math.round((completedDayTasks / totalDayTasks) * 100);
 
-  const completionPercent =
-    totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+  // ==========================================
+  // RECENT CHAPTERS
+  // ==========================================
+
+  const recentChapters = useMemo(() => {
+    return [...tasks]
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
+      )
+      .slice(0, 6);
+  }, [tasks]);
 
   return (
-    <div className="p-6 space-y-8">
-      <div className="flex flex-col gap-2">
+    <div className="space-y-8 p-6">
+      {/* ========================================
+          HEADER
+      ======================================== */}
+
+      <div>
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-sm">Overview of your tasks and daily tracking.</p>
+
+        <p className="mt-2 text-sm text-gray-400">
+          Overview of your study tasks and progress.
+        </p>
       </div>
+
+      {/* ========================================
+          STAT CARDS
+      ======================================== */}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
-          <p className="text-sm uppercase tracking-[0.2em]">Total Tasks</p>
-          <p className="mt-4 text-4xl font-semibold">{totalTasks}</p>
-          <p className="mt-2 text-sm text-(--secondary-color)">
-            All tasks added in the system.
-          </p>
-        </div>
+        {/* TOTAL TASKS */}
 
-        <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
-          <p className="text-sm uppercase tracking-[0.2em]">Completed</p>
-          <p className="mt-4 text-4xl font-semibold">{completedTasks}</p>
-          <p className="mt-2 text-sm text-(--secondary-color)">
-            Tasks marked as completed.
+        <div className="rounded-xl border border-white/10 bg-(--bg-transparent-color) p-6 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px]">
+          <p className="text-sm uppercase tracking-[0.2em] text-gray-400">
+            Total Tasks
           </p>
-        </div>
 
-        <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
-          <p className="text-sm uppercase tracking-[0.2em]">Pending</p>
-          <p className="mt-4 text-4xl font-semibold">{pendingTasks}</p>
-          <p className="mt-2 text-sm text-(--secondary-color)">
-            Tasks still pending review or completion.
-          </p>
-        </div>
-
-        <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
-          <p className="text-sm uppercase tracking-[0.2em]">Day Tasks</p>
           <p className="mt-4 text-4xl font-semibold">
-            {completedDayTasks}/{totalDayTasks}
+            {totalTasks}
           </p>
+
           <p className="mt-2 text-sm text-(--secondary-color)">
-            Daily study tasks available.
+            Checklist items across all chapters.
+          </p>
+        </div>
+
+        {/* COMPLETED */}
+
+        <div className="rounded-xl border border-white/10 bg-(--bg-transparent-color) p-6 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px]">
+          <p className="text-sm uppercase tracking-[0.2em] text-gray-400">
+            Completed
+          </p>
+
+          <p className="mt-4 text-4xl font-semibold">
+            {completedTasks}
+          </p>
+
+          <p className="mt-2 text-sm text-(--secondary-color)">
+            Checklist items completed.
+          </p>
+        </div>
+
+        {/* PENDING */}
+
+        <div className="rounded-xl border border-white/10 bg-(--bg-transparent-color) p-6 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px]">
+          <p className="text-sm uppercase tracking-[0.2em] text-gray-400">
+            Pending
+          </p>
+
+          <p className="mt-4 text-4xl font-semibold">
+            {pendingTasks}
+          </p>
+
+          <p className="mt-2 text-sm text-(--secondary-color)">
+            Checklist items remaining.
+          </p>
+        </div>
+
+        {/* CHAPTERS */}
+
+        <div className="rounded-xl border border-white/10 bg-(--bg-transparent-color) p-6 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px]">
+          <p className="text-sm uppercase tracking-[0.2em] text-gray-400">
+            Chapters
+          </p>
+
+          <p className="mt-4 text-4xl font-semibold">
+            {totalChapters}
+          </p>
+
+          <p className="mt-2 text-sm text-(--secondary-color)">
+            Study chapters added.
           </p>
         </div>
       </div>
 
-      <div className="flex gap-4 flex-col md:flex-row">
-        <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
+      {/* ========================================
+          PROGRESS
+      ======================================== */}
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* TASK PROGRESS */}
+
+        <div className="rounded-xl border border-white/10 bg-(--bg-transparent-color) p-6 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px]">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em]">
-                Completion Progress
+              <p className="text-sm uppercase tracking-[0.2em] text-gray-400">
+                Task Progress
               </p>
+
               <h3 className="mt-2 text-2xl font-semibold">
                 {completionPercent}%
               </h3>
             </div>
+
             <p className="text-sm text-(--secondary-color)">
-              {completedTasks} of {totalTasks} tasks completed
+              {completedTasks} of {totalTasks} completed
             </p>
           </div>
-          <div className="mt-6 h-3 rounded-full bg-white/10 overflow-hidden">
+
+          <div className="mt-6 h-3 overflow-hidden rounded-full bg-white/10">
             <div
               className="h-full rounded-full bg-(--accent-color) transition-all duration-500"
-              style={{ width: `${completionPercent}%` }}
+              style={{
+                width: `${completionPercent}%`,
+              }}
             />
           </div>
         </div>
 
-        <div className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
+        {/* DAILY PROGRESS */}
+
+        <div className="rounded-xl border border-white/10 bg-(--bg-transparent-color) p-6 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px]">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em]">
-                Day Completion Progress
+              <p className="text-sm uppercase tracking-[0.2em] text-gray-400">
+                Weekly Planner
               </p>
+
               <h3 className="mt-2 text-2xl font-semibold">
                 {dayTaskCompletionPercent}%
               </h3>
             </div>
+
             <p className="text-sm text-(--secondary-color)">
-              {completedDayTasks} of {totalDayTasks} tasks completed
+              {completedDayTasks} of {totalDayTasks} completed
             </p>
           </div>
-          <div className="mt-6 h-3 rounded-full bg-white/10 overflow-hidden">
+
+          <div className="mt-6 h-3 overflow-hidden rounded-full bg-white/10">
             <div
               className="h-full rounded-full bg-(--accent-color) transition-all duration-500"
-              style={{ width: `${dayTaskCompletionPercent}%` }}
+              style={{
+                width: `${dayTaskCompletionPercent}%`,
+              }}
             />
           </div>
         </div>
       </div>
 
-      <section className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
+      {/* ========================================
+          RECENT CHAPTERS
+      ======================================== */}
+
+      <section className="rounded-xl border border-white/10 bg-(--bg-transparent-color) p-6 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px]">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold">Recent Tasks</h2>
-          <span className="text-sm text-gray-400">Latest updates</span>
+          <div>
+            <h2 className="text-xl font-semibold">
+              Recent Chapters
+            </h2>
+
+            <p className="mt-1 text-sm text-gray-400">
+              Your recently added study chapters.
+            </p>
+          </div>
+
+          <span className="text-sm text-gray-400">
+            {totalChapters} chapters
+          </span>
         </div>
 
         {loading ? (
-          <p className="mt-6 text-sm text-gray-400">Loading...</p>
-        ) : tasks.length === 0 ? (
-          <p className="mt-6 text-sm text-gray-300">No tasks available yet.</p>
+          <p className="mt-6 text-sm text-gray-400">
+            Loading...
+          </p>
+        ) : recentChapters.length === 0 ? (
+          <p className="mt-6 text-sm text-gray-300">
+            No chapters available yet.
+          </p>
         ) : (
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {tasks.slice(0, 6).map((taskItem) => (
-              <div
-                key={taskItem._id || taskItem.id}
-                className="rounded-3xl bg-(--bg-transparent-2-color) p-4"
-              >
-                <p className="text-xs uppercase tracking-[0.2em] text-gray-400">
-                  {taskItem.subject || "Unknown"}
-                </p>
-                <h3 className="mt-2 text-lg font-semibold">
-                  {taskItem.title || taskItem.topic || "No topic"}
-                </h3>
-                <p className="mt-3 text-sm text-gray-300">
-                  Status: {taskItem.status || (isTaskCompleted(taskItem) ? "completed" : "pending")}
-                </p>
-              </div>
-            ))}
+            {recentChapters.map((chapter) => {
+              const chapterTasks = Array.isArray(chapter.tasks)
+                ? chapter.tasks
+                : [];
+
+              const chapterCompleted = chapterTasks.filter(
+                (task) => task.completed === true,
+              ).length;
+
+              const chapterTotal = chapterTasks.length;
+
+              const chapterProgress =
+                chapterTotal === 0
+                  ? 0
+                  : Math.round(
+                      (chapterCompleted / chapterTotal) * 100,
+                    );
+
+              return (
+                <div
+                  key={chapter._id}
+                  className="rounded-2xl border border-white/10 bg-(--bg-transparent-2-color) p-5"
+                >
+                  {/* SUBJECT */}
+
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`rounded-md px-2.5 py-1 text-xs ${
+                        chapter.subject === "Physics"
+                          ? "bg-[#225b8b]"
+                          : chapter.subject === "Chemistry"
+                            ? "bg-[#80651b]"
+                            : chapter.subject === "Botany"
+                              ? "bg-[#286044]"
+                              : "bg-[#67427a]"
+                      }`}
+                    >
+                      {chapter.subject}
+                    </span>
+
+                    <span className="text-xs text-gray-500">
+                      {chapterTotal} items
+                    </span>
+                  </div>
+
+                  {/* CHAPTER NAME */}
+
+                  <h3 className="mt-5 text-lg font-semibold">
+                    {chapter.subject} Chapter
+                  </h3>
+
+                  {/* PROGRESS */}
+
+                  <div className="mt-5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-400">
+                        Progress
+                      </span>
+
+                      <span className="text-gray-300">
+                        {chapterCompleted}/{chapterTotal}
+                      </span>
+                    </div>
+
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-(--accent-color) transition-all"
+                        style={{
+                          width: `${chapterProgress}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
 
-      <section className="rounded-xl bg-(--bg-transparent-color) shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px] backdrop-saturate-150 p-6 border border-white/10">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-xl font-semibold">Daily Task Trends</h2>
-          <span className="text-sm text-gray-400">Track your daily progress</span>
+      {/* ========================================
+          WEEKLY PLANNER SUMMARY
+      ======================================== */}
+
+      <section className="rounded-xl border border-white/10 bg-(--bg-transparent-color) p-6 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px]">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">
+              Weekly Planner
+            </h2>
+
+            <p className="mt-1 text-sm text-gray-400">
+              Current checklist progress.
+            </p>
+          </div>
+
+          <div className="text-right">
+            <p className="text-2xl font-semibold">
+              {completedDayTasks}/{totalDayTasks}
+            </p>
+
+            <p className="text-xs text-gray-500">
+              completed
+            </p>
+          </div>
         </div>
+
+        <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="rounded-xl bg-white/5 p-4">
+            <p className="text-xs uppercase tracking-wider text-gray-500">
+              Total
+            </p>
+
+            <p className="mt-2 text-2xl font-semibold">
+              {totalDayTasks}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-white/5 p-4">
+            <p className="text-xs uppercase tracking-wider text-gray-500">
+              Completed
+            </p>
+
+            <p className="mt-2 text-2xl font-semibold">
+              {completedDayTasks}
+            </p>
+          </div>
+
+          <div className="rounded-xl bg-white/5 p-4">
+            <p className="text-xs uppercase tracking-wider text-gray-500">
+              Pending
+            </p>
+
+            <p className="mt-2 text-2xl font-semibold">
+              {pendingDayTasks}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================
+          DAILY TASK CHART
+      ======================================== */}
+
+      <section className="rounded-xl border border-white/10 bg-(--bg-transparent-color) p-6 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] backdrop-blur-[14px]">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold">
+              Daily Task Trends
+            </h2>
+
+            <p className="mt-1 text-sm text-gray-400">
+              Track your daily progress.
+            </p>
+          </div>
+        </div>
+
         <div className="mt-6">
           <IndexLineChart />
         </div>
