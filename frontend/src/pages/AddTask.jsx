@@ -105,7 +105,7 @@ const AddTask = () => {
           ),
         );
       } else {
-        response = await api.post("/task", data);
+        response = await api.post("/api/task", data);
 
         setPlanners((previous) => [...previous, response.data.planner]);
       }
