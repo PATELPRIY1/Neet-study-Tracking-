@@ -9,7 +9,7 @@ const { authUser } = require("../middleware/auth.middleware");
 router.get("/weekly-planner", authUser, weeklyPlannerController.getPlanner);
 router.post("/weekly-planner", authUser, weeklyPlannerController.createPlanner);
 router.patch(
-  "/weekly-planner/:plannerId/:taskId",
+  "/weekly-planner/:plannerId/task/:taskId",
   authUser,
   weeklyPlannerController.updatePlannerTask,
 );
