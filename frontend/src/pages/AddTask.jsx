@@ -545,7 +545,7 @@ const ChapterCard = ({
       </h2>
 
       <div className="mt-4 flex items-center gap-3">
-        <span className="min-w-[45px] text-sm">{progress}0%</span>
+        <span className="min-w-[45px] text-sm">{progress}.0%</span>
 
         <div className="h-1 flex-1 rounded-full bg-[#373737]">
           <div
