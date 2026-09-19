@@ -20,8 +20,7 @@ const DEFAULT_TASKS = [
 ];
 
 const EMPTY_FORM = {
-  subject: "Physics",
-  title: "",
+  subject: "Physics"
 };
 
 const AddTask = () => {
@@ -84,7 +83,6 @@ const AddTask = () => {
 
       const data = {
         subject: formData.subject,
-        title: formData.title.trim(),
         tasks: taskNames.map((task) => ({
           ...(task._id && { _id: task._id }),
           name: task.name,
@@ -226,7 +224,6 @@ const AddTask = () => {
 
     setFormData({
       subject: planner.subject || "Physics",
-      title: planner.title || "",
     });
 
     setTaskNames(
@@ -257,11 +254,10 @@ const AddTask = () => {
 
       result = result.filter((planner) => {
         const plannerSubject = planner.subject?.toLowerCase() || "";
-        const plannerTitle = planner.title?.toLowerCase() || "";
 
         return (
           plannerSubject.includes(searchText) ||
-          plannerTitle.includes(searchText)
+          planner.tasks.some((task) => task.name?.toLowerCase().includes(searchText))
         );
       });
     }
@@ -313,7 +309,7 @@ const AddTask = () => {
                 onClick={() =>
                   setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
                 }
-                title={sortOrder === "asc" ? "Ascending" : "Descending"}
+                subject={sortOrder === "asc" ? "Ascending" : "Descending"}
               >
                 <ArrowUpDown size={18} />
                 <span>{sortOrder === "asc" ? "A → Z" : "Z → A"}</span>
@@ -545,7 +541,7 @@ const ChapterCard = ({
   return (
     <div className="min-h-[480px] rounded-xl border border-white/10 bg-[#1c1c1c] p-5">
       <h2 className="text-[17px] font-semibold">
-        {index + 1}. {planner.title}
+        {index + 1}. {planner.subject}
       </h2>
 
       <div className="mt-4 flex items-center gap-3">
