@@ -11,16 +11,6 @@ import {
 import api from "../api/axios";
 
 const WeeklyPlanner = () => {
-  const parseLocalDate = (dateString) => {
-    if (!dateString) return null;
-
-    const [year, month, day] = dateString.split("-").map(Number);
-
-    if (!year || !month || !day) return null;
-
-    return new Date(year, month - 1, day);
-  };
-
   const getMonday = (date) => {
     const d = typeof date === "string" ? parseLocalDate(date) : new Date(date);
 
@@ -39,11 +29,23 @@ const WeeklyPlanner = () => {
   };
 
   const formatDateInput = (date) => {
+    if (!date || Number.isNaN(date.getTime())) return "";
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
+  };
+
+  const parseLocalDate = (dateString) => {
+    if (!dateString) return null;
+
+    const [year, month, day] = dateString.split("-").map(Number);
+
+    if (!year || !month || !day) return null;
+
+    return new Date(year, month - 1, day);
   };
 
   const calculateWeekDates = (week) => {
@@ -213,13 +215,22 @@ const WeeklyPlanner = () => {
     // =========================
     // WEEK FILTER
     // =========================
-    if (weekFilter === "This week") {
-      const monday = getMonday(new Date());
-      const weekStart = formatDateInput(monday);
+    if (weekFilter !== "All weeks") {
+      const targetWeek = calculateWeekDates(weekFilter);
 
-      result = result.filter(
-        (planner) => formatDateInput(new Date(planner.weekStart)) === weekStart,
-      );
+      result = result.filter((planner) => {
+        if (!planner.weekStart) return false;
+
+        const plannerDate = new Date(planner.weekStart);
+
+        if (Number.isNaN(plannerDate.getTime())) {
+          return false;
+        }
+
+        const plannerMonday = getMonday(plannerDate);
+
+        return formatDateInput(plannerMonday) === targetWeek.weekStart;
+      });
     }
 
     // =========================
@@ -271,19 +282,6 @@ const WeeklyPlanner = () => {
       return;
     }
 
-    if (name === "weekEnd") {
-      const selectedEnd = parseLocalDate(value);
-
-      if (!selectedEnd) return;
-
-      setFormData((previous) => ({
-        ...previous,
-        weekEnd: value,
-      }));
-
-      return;
-    }
-
     setFormData((previous) => ({
       ...previous,
       [name]: value,
@@ -293,7 +291,12 @@ const WeeklyPlanner = () => {
   const savePlanner = async (e) => {
     e.preventDefault();
 
-    if (!formData.title.trim() || !formData.weekStart || !formData.weekEnd || !formData.subject) {
+    if (
+      !formData.title.trim() ||
+      !formData.weekStart ||
+      !formData.weekEnd ||
+      !formData.subject
+    ) {
       alert("Please fill all required fields.");
       return;
     }
