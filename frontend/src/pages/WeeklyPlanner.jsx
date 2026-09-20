@@ -11,8 +11,23 @@ import {
 import api from "../api/axios";
 
 const WeeklyPlanner = () => {
+  const parseLocalDate = (dateString) => {
+    if (!dateString) return null;
+
+    const [year, month, day] = dateString.split("-").map(Number);
+
+    if (!year || !month || !day) return null;
+
+    return new Date(year, month - 1, day);
+  };
+
   const getMonday = (date) => {
-    const d = new Date(date);
+    const d = typeof date === "string" ? parseLocalDate(date) : new Date(date);
+
+    if (!d || Number.isNaN(d.getTime())) {
+      return null;
+    }
+
     d.setHours(0, 0, 0, 0);
 
     const day = d.getDay();
@@ -239,6 +254,36 @@ const WeeklyPlanner = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
+    if (name === "weekStart") {
+      const monday = getMonday(value);
+
+      if (!monday) return;
+
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+
+      setFormData((previous) => ({
+        ...previous,
+        weekStart: formatDateInput(monday),
+        weekEnd: formatDateInput(sunday),
+      }));
+
+      return;
+    }
+
+    if (name === "weekEnd") {
+      const selectedEnd = parseLocalDate(value);
+
+      if (!selectedEnd) return;
+
+      setFormData((previous) => ({
+        ...previous,
+        weekEnd: value,
+      }));
+
+      return;
+    }
+
     setFormData((previous) => ({
       ...previous,
       [name]: value,
@@ -248,7 +293,7 @@ const WeeklyPlanner = () => {
   const savePlanner = async (e) => {
     e.preventDefault();
 
-    if (!formData.title.trim() || !formData.weekStart || !formData.weekEnd) {
+    if (!formData.title.trim() || !formData.weekStart || !formData.weekEnd || !formData.subject) {
       alert("Please fill all required fields.");
       return;
     }
@@ -258,7 +303,15 @@ const WeeklyPlanner = () => {
       return;
     }
 
-    if (new Date(formData.weekEnd) < new Date(formData.weekStart)) {
+    const startDate = parseLocalDate(formData.weekStart);
+    const endDate = parseLocalDate(formData.weekEnd);
+
+    if (!startDate || !endDate) {
+      alert("Please select valid dates.");
+      return;
+    }
+
+    if (endDate < startDate) {
       alert("End date cannot be before start date.");
       return;
     }

@@ -12,7 +12,7 @@ const plannerTaskSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { _id: true }
+  { _id: true },
 );
 
 const weeklyPlannerSchema = new mongoose.Schema(
@@ -49,10 +49,7 @@ const weeklyPlannerSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-module.exports = mongoose.model(
-  "WeeklyPlanner",
-  weeklyPlannerSchema
-);
+module.exports = mongoose.model("WeeklyPlanner", weeklyPlannerSchema);
