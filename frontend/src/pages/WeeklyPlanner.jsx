@@ -11,23 +11,6 @@ import {
 import api from "../api/axios";
 
 const WeeklyPlanner = () => {
-  const getMonday = (date) => {
-    const d = typeof date === "string" ? parseLocalDate(date) : new Date(date);
-
-    if (!d || Number.isNaN(d.getTime())) {
-      return null;
-    }
-
-    d.setHours(0, 0, 0, 0);
-
-    const day = d.getDay();
-    const diff = day === 0 ? -6 : 1 - day;
-
-    d.setDate(d.getDate() + diff);
-
-    return d;
-  };
-
   const formatDateInput = (date) => {
     if (!date || Number.isNaN(date.getTime())) return "";
 
@@ -50,8 +33,12 @@ const WeeklyPlanner = () => {
 
   const calculateWeekDates = (week) => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    let monday = getMonday(today);
+    const day = today.getDay();
+    const monday = new Date(today);
+
+    monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1));
 
     if (week === "Next week") {
       monday.setDate(monday.getDate() + 7);
@@ -62,8 +49,7 @@ const WeeklyPlanner = () => {
     }
 
     const sunday = new Date(monday);
-
-    sunday.setDate(sunday.getDate() + 6);
+    sunday.setDate(monday.getDate() + 6);
 
     return {
       weekStart: formatDateInput(monday),
@@ -218,18 +204,29 @@ const WeeklyPlanner = () => {
     if (weekFilter !== "All weeks") {
       const targetWeek = calculateWeekDates(weekFilter);
 
+      const filterStart = parseLocalDate(targetWeek.weekStart);
+      const filterEnd = parseLocalDate(targetWeek.weekEnd);
+
       result = result.filter((planner) => {
-        if (!planner.weekStart) return false;
-
-        const plannerDate = new Date(planner.weekStart);
-
-        if (Number.isNaN(plannerDate.getTime())) {
+        if (!planner.weekStart || !planner.weekEnd) {
           return false;
         }
 
-        // const plannerMonday = getMonday(plannerDate);
+        const plannerStart = parseLocalDate(
+          formatDateInput(new Date(planner.weekStart)),
+        );
 
-        // return formatDateInput(plannerMonday) === targetWeek.weekStart;
+        const plannerEnd = parseLocalDate(
+          formatDateInput(new Date(planner.weekEnd)),
+        );
+
+        if (!plannerStart || !plannerEnd) {
+          return false;
+        }
+
+        // Show planner if its date range overlaps
+        // the selected calendar week.
+        return plannerStart <= filterEnd && plannerEnd >= filterStart;
       });
     }
 
@@ -433,14 +430,26 @@ const WeeklyPlanner = () => {
     setNewTaskName("");
   };
 
+  const formatMongoDate = (dateValue) => {
+    if (!dateValue) return "";
+
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+
+    return date.toISOString().split("T")[0];
+  };
+
   const openEditModal = (planner) => {
     setEditingPlanner(planner);
 
     setFormData({
       title: planner.title || "",
       subject: planner.subject || "Physics",
-      weekStart: formatDateInput(new Date(planner.weekStart)),
-      weekEnd: formatDateInput(new Date(planner.weekEnd)),
+      weekStart: formatMongoDate(planner.weekStart),
+      weekEnd: formatMongoDate(planner.weekEnd),
     });
 
     setTaskNames(
