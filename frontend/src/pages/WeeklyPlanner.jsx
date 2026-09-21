@@ -495,7 +495,7 @@ const WeeklyPlanner = () => {
                 <span>{sortOrder === "asc" ? "A → Z" : "Z → A"}</span>
               </button>
 
-              <button className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10">
+              <div className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10">
                 <Search size={18} />
                 <input
                   type="text"
@@ -509,7 +509,7 @@ const WeeklyPlanner = () => {
                     <X size={16} />
                   </button>
                 )}
-              </button>
+              </div>
 
               <button
                 onClick={openCreateModal}
@@ -795,34 +795,48 @@ const ChapterCard = ({
   const tasks = Array.isArray(planner.tasks) ? planner.tasks : [];
 
   const completedCount = tasks.filter((task) => task.completed).length;
-
   const totalTasks = tasks.length;
 
   const progress =
     totalTasks === 0 ? 0 : Math.round((completedCount / totalTasks) * 100);
 
-  const startDate = new Date(planner.weekStart).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
+  const formatDisplayDate = (dateValue) => {
+    if (!dateValue) return "";
 
-  const endDate = new Date(planner.weekEnd).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    });
+  };
+
+  const startDate = formatDisplayDate(planner.weekStart);
+  const endDate = formatDisplayDate(planner.weekEnd);
 
   return (
     <div className="min-h-[480px] rounded-xl border border-white/10 bg-[#1c1c1c] p-5">
+      {/* =========================
+          CARD HEADER
+      ========================= */}
       <h2 className="text-[17px] font-semibold">
         {index + 1}. {planner.title}
       </h2>
 
+      {/* =========================
+          PROGRESS
+      ========================= */}
       <div className="mt-4 flex items-center gap-3">
-        <span className="min-w-[45px] text-sm">{progress}.0%</span>
+        <span className="min-w-[45px] text-sm">{progress}%</span>
 
         <div className="h-1 flex-1 rounded-full bg-[#373737]">
           <div
-            className="h-full rounded-full bg-[#4caf7d] transition-all"
+            className="h-full rounded-full bg-[#4caf7d] transition-all duration-300"
             style={{
               width: `${progress}%`,
             }}
@@ -830,6 +844,9 @@ const ChapterCard = ({
         </div>
       </div>
 
+      {/* =========================
+          CHECKLIST
+      ========================= */}
       <div className="mt-5 space-y-2.5">
         {tasks.map((task, taskIndex) => (
           <label
@@ -842,7 +859,7 @@ const ChapterCard = ({
               onChange={(e) =>
                 toggleTask(planner._id, task._id, e.target.checked)
               }
-              className="h-4 w-4"
+              className="h-4 w-4 cursor-pointer"
             />
 
             <span
@@ -856,6 +873,9 @@ const ChapterCard = ({
         ))}
       </div>
 
+      {/* =========================
+          SUBJECT
+      ========================= */}
       <div className="mt-6">
         <span
           className={`rounded-md px-2.5 py-1 text-xs ${
@@ -872,15 +892,21 @@ const ChapterCard = ({
         </span>
       </div>
 
+      {/* =========================
+          DATE RANGE
+      ========================= */}
       <div className="mt-3 text-sm text-gray-300">
         {startDate} → {endDate}
       </div>
 
+      {/* =========================
+          ACTIONS
+      ========================= */}
       <div className="mt-5 flex gap-2">
         <button
           type="button"
           onClick={() => openEditModal(planner)}
-          className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/60 hover:cursor-pointer active:scale-[95%]"
+          className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/20 active:scale-[95%]"
         >
           Edit
         </button>
@@ -888,7 +914,7 @@ const ChapterCard = ({
         <button
           type="button"
           onClick={() => deletePlanner(planner._id)}
-          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/20 hover:cursor-pointer active:scale-[95%]"
+          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/20 active:scale-[95%]"
         >
           Delete
         </button>
