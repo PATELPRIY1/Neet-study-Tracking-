@@ -227,9 +227,9 @@ const WeeklyPlanner = () => {
           return false;
         }
 
-        const plannerMonday = getMonday(plannerDate);
+        // const plannerMonday = getMonday(plannerDate);
 
-        return formatDateInput(plannerMonday) === targetWeek.weekStart;
+        // return formatDateInput(plannerMonday) === targetWeek.weekStart;
       });
     }
 
@@ -264,23 +264,6 @@ const WeeklyPlanner = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "weekStart") {
-      const monday = getMonday(value);
-
-      if (!monday) return;
-
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
-
-      setFormData((previous) => ({
-        ...previous,
-        weekStart: formatDateInput(monday),
-        weekEnd: formatDateInput(sunday),
-      }));
-
-      return;
-    }
 
     setFormData((previous) => ({
       ...previous,
