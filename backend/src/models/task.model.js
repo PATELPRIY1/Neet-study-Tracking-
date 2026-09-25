@@ -1,39 +1,46 @@
 const mongoose = require("mongoose");
 
-const Task = new mongoose.Schema(
+const plannerTaskSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
     },
 
-    completed: {
-      type: Boolean,
-      default: false,
+    date: {
+      type: Date,
+      required: false,
+      default: null,
+    },
+
+    status: {
+      type: String,
+      enum: ["pending", "half", "completed", "missed"],
+      default: "pending",
     },
   },
-  { _id: true }
+  { _id: true },
 );
 
-const taskSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  subject: {
-    type: String,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  tasks: [Task],
-});
+const taskSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
-module.exports = mongoose.model(
-  "Task",
-  taskSchema
+    subject: {
+      type: String,
+      enum: ["Physics", "Chemistry", "Botany", "Zoology"],
+      required: true,
+    },
+
+    tasks: [plannerTaskSchema],
+  },
+  {
+    timestamps: true,
+  },
 );
 
+module.exports = mongoose.model("Task", taskSchema);

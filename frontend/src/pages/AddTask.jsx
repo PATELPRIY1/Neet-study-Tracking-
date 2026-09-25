@@ -15,12 +15,20 @@ import Swal from "sweetalert2";
 import api from "../api/axios";
 
 const DEFAULT_TASKS = [
-  { name: "Notes Rev", completed: false },
-  { name: "NCERT Rev", completed: false },
+  {
+    name: "Notes Rev",
+    date: "",
+    status: "pending",
+  },
+  {
+    name: "NCERT Rev",
+    date: "",
+    status: "pending",
+  },
 ];
 
 const EMPTY_FORM = {
-  subject: "Physics"
+  subject: "Physics",
 };
 
 const AddTask = () => {
@@ -50,7 +58,8 @@ const AddTask = () => {
       ...prev,
       {
         name,
-        completed: false,
+        date: "",
+        status: "pending",
       },
     ]);
 
@@ -77,15 +86,22 @@ const AddTask = () => {
       return;
     }
 
+    if (taskNames.some((task) => !task.name.trim() || !task.date)) {
+      alert("Please enter a task name and date for every task.");
+      return;
+    }
+
     try {
       setCreating(true);
 
       const data = {
         subject: formData.subject,
+
         tasks: taskNames.map((task) => ({
           ...(task._id && { _id: task._id }),
-          name: task.name,
-          completed: task.completed,
+          name: task.name.trim(),
+          date: task.date,
+          status: task.status || "pending",
         })),
       };
 
@@ -156,38 +172,84 @@ const AddTask = () => {
     }));
   };
 
-  const toggleTask = async (plannerId, taskId, completed) => {
+  const updateTaskStatus = async (req, res) => {
     try {
-      setPlanners((previous) =>
-        previous.map((planner) => {
-          if (planner._id !== plannerId) {
-            return planner;
-          }
+      const userId = req.user.id;
 
-          const tasks = Array.isArray(planner.tasks) ? planner.tasks : [];
+      const { plannerId, taskId } = req.params;
+      const { status } = req.body;
 
-          return {
-            ...planner,
-            tasks: tasks.map((task) =>
-              task._id === taskId
-                ? {
-                    ...task,
-                    completed,
-                  }
-                : task,
-            ),
-          };
-        }),
-      );
+      const allowedStatuses = ["pending", "half", "completed", "missed"];
 
-      await api.patch(`/api/task/${plannerId}/task/${taskId}`, {
-        completed,
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+          message: "Invalid task status",
+        });
+      }
+
+      const taskDoc = await taskModel.findOne({
+        _id: plannerId,
+        userId,
+      });
+
+      if (!taskDoc) {
+        return res.status(404).json({
+          message: "Planner not found",
+        });
+      }
+
+      const nestedTask = taskDoc.tasks.id(taskId);
+
+      if (!nestedTask) {
+        return res.status(404).json({
+          message: "Checklist task not found",
+        });
+      }
+
+      nestedTask.status = status;
+
+      await taskDoc.save();
+
+      res.status(200).json({
+        message: "Task status updated successfully",
+        planner: taskDoc,
       });
     } catch (error) {
-      console.error("Failed to update task:", error);
+      console.error("Update task status error:", error);
 
-      fetchPlanner();
+      res.status(500).json({
+        message: "Error updating task status",
+        error: error.message,
+      });
     }
+  };
+
+  const getTaskStatus = (task) => {
+    if (task.status === "completed") {
+      return {
+        label: "Completed",
+        className: "text-green-400",
+      };
+    }
+
+    if (task.status === "half") {
+      return {
+        label: "Half Complete",
+        className: "text-yellow-400",
+      };
+    }
+
+    if (task.status === "missed") {
+      return {
+        label: "Missed",
+        className: "text-red-400",
+      };
+    }
+
+    return {
+      label: "Pending",
+      className: "text-gray-400",
+    };
   };
 
   const deletePlanner = async (plannerId) => {
@@ -230,7 +292,10 @@ const AddTask = () => {
         ? planner.tasks.map((task) => ({
             _id: task._id,
             name: task.name,
-            completed: Boolean(task.completed),
+            date: task.date
+              ? new Date(task.date).toISOString().split("T")[0]
+              : "",
+            status: task.status || "pending",
           }))
         : [],
     );
@@ -256,7 +321,9 @@ const AddTask = () => {
 
         return (
           plannerSubject.includes(searchText) ||
-          planner.tasks.some((task) => task.name?.toLowerCase().includes(searchText))
+          planner.tasks.some((task) =>
+            task.name?.toLowerCase().includes(searchText),
+          )
         );
       });
     }
@@ -292,7 +359,6 @@ const AddTask = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center justify-between gap-3 border-b border-white/10 px-6 py-4">
             <div className="flex items-center gap-2">
-
               <div className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] flex items-center gap-2 px-3 py-2 text-sm text-gray-400">
                 <Search size={18} />
 
@@ -347,7 +413,7 @@ const AddTask = () => {
                 key={planner._id}
                 planner={planner}
                 index={index}
-                toggleTask={toggleTask}
+                updateTaskStatus={updateTaskStatus}
                 deletePlanner={deletePlanner}
                 openEditModal={openEditModal}
               />
@@ -420,31 +486,132 @@ const AddTask = () => {
                       ) : (
                         taskNames.map((task, index) => (
                           <div
-                            key={`${task.name}-${index}`}
-                            className="flex items-center gap-2"
+                            key={`${task._id || "new"}-${index}`}
+                            className="rounded-lg border border-white/10 bg-[#111111] p-3"
                           >
-                            <input
-                              type="text"
-                              value={task.name}
-                              onChange={(e) =>
-                                setTaskNames((prev) =>
-                                  prev.map((item, taskIndex) =>
-                                    taskIndex === index
-                                      ? { ...item, name: e.target.value }
-                                      : item,
-                                  ),
-                                )
-                              }
-                              className="flex-1 rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none"
-                            />
+                            {/* TASK NAME */}
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={task.name}
+                                onChange={(e) =>
+                                  setTaskNames((prev) =>
+                                    prev.map((item, taskIndex) =>
+                                      taskIndex === index
+                                        ? {
+                                            ...item,
+                                            name: e.target.value,
+                                          }
+                                        : item,
+                                    ),
+                                  )
+                                }
+                                placeholder="Task name"
+                                className="flex-1 rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none"
+                              />
 
-                            <button
-                              type="button"
-                              onClick={() => removeTask(index)}
-                              className="rounded-lg bg-red-500/10 p-2 text-red-400 hover:bg-red-500/20"
-                            >
-                              <Trash2 size={16} />
-                            </button>
+                              <button
+                                type="button"
+                                onClick={() => removeTask(index)}
+                                className="rounded-lg bg-red-500/10 p-2 text-red-400 hover:bg-red-500/20"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+
+                            {/* DATE */}
+                            <div className="mt-3">
+                              <label className="mb-1 block text-xs text-gray-400">
+                                Task Date
+                              </label>
+
+                              <input
+                                type="date"
+                                value={task.date || ""}
+                                onChange={(e) =>
+                                  setTaskNames((prev) =>
+                                    prev.map((item, taskIndex) =>
+                                      taskIndex === index
+                                        ? {
+                                            ...item,
+                                            date: e.target.value,
+                                          }
+                                        : item,
+                                    ),
+                                  )
+                                }
+                                className="w-full rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none"
+                              />
+                            </div>
+
+                            {/* STATUS */}
+                            <div className="mt-3">
+                              <label className="mb-2 block text-xs text-gray-400">
+                                Status
+                              </label>
+
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setTaskNames((prev) =>
+                                      prev.map((item, taskIndex) =>
+                                        taskIndex === index
+                                          ? { ...item, status: "pending" }
+                                          : item,
+                                      ),
+                                    )
+                                  }
+                                  className={`rounded-md px-3 py-1.5 text-xs ${
+                                    task.status === "pending"
+                                      ? "bg-gray-500/30 text-gray-200"
+                                      : "bg-white/5 text-gray-400"
+                                  }`}
+                                >
+                                  Pending
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setTaskNames((prev) =>
+                                      prev.map((item, taskIndex) =>
+                                        taskIndex === index
+                                          ? { ...item, status: "half" }
+                                          : item,
+                                      ),
+                                    )
+                                  }
+                                  className={`rounded-md px-3 py-1.5 text-xs ${
+                                    task.status === "half"
+                                      ? "bg-yellow-500/30 text-yellow-300"
+                                      : "bg-white/5 text-gray-400"
+                                  }`}
+                                >
+                                  Half
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setTaskNames((prev) =>
+                                      prev.map((item, taskIndex) =>
+                                        taskIndex === index
+                                          ? { ...item, status: "completed" }
+                                          : item,
+                                      ),
+                                    )
+                                  }
+                                  className={`rounded-md px-3 py-1.5 text-xs ${
+                                    task.status === "completed"
+                                      ? "bg-green-500/30 text-green-300"
+                                      : "bg-white/5 text-gray-400"
+                                  }`}
+                                >
+                                  Completed
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         ))
                       )}
@@ -503,27 +670,110 @@ const AddTask = () => {
 const ChapterCard = ({
   planner,
   index,
-  toggleTask,
+  updateTaskStatus,
   deletePlanner,
   openEditModal,
 }) => {
   const tasks = Array.isArray(planner.tasks) ? planner.tasks : [];
 
-  const completedCount = tasks.filter((task) => task.completed).length;
+  const getEffectiveStatus = (task) => {
+    if (task.status === "completed") {
+      return "completed";
+    }
+
+    if (task.status === "half") {
+      return "half";
+    }
+
+    if (!task.date) {
+      return "pending";
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const taskDate = new Date(task.date);
+    taskDate.setHours(0, 0, 0, 0);
+
+    if (taskDate < today) {
+      return "missed";
+    }
+
+    return "pending";
+  };
+
+  const getStatusInfo = (task) => {
+    const status = getEffectiveStatus(task);
+
+    switch (status) {
+      case "completed":
+        return {
+          label: "Completed",
+          className: "bg-green-500/15 text-green-400",
+        };
+
+      case "half":
+        return {
+          label: "Half Complete",
+          className: "bg-yellow-500/15 text-yellow-400",
+        };
+
+      case "missed":
+        return {
+          label: "Missed",
+          className: "bg-red-500/15 text-red-400",
+        };
+
+      default:
+        return {
+          label: "Pending",
+          className: "bg-gray-500/15 text-gray-400",
+        };
+    }
+  };
+
+  const completedCount = tasks.filter(
+    (task) => getEffectiveStatus(task) === "completed",
+  ).length;
+
+  const halfCount = tasks.filter(
+    (task) => getEffectiveStatus(task) === "half",
+  ).length;
 
   const totalTasks = tasks.length;
 
   const progress =
-    totalTasks === 0 ? 0 : Math.round((completedCount / totalTasks) * 100);
+    totalTasks === 0
+      ? 0
+      : Math.round(((completedCount + halfCount * 0.5) / totalTasks) * 100);
+
+  const formatTaskDate = (dateValue) => {
+    if (!dateValue) return "No date";
+
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) {
+      return "Invalid date";
+    }
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+  };
 
   return (
     <div className="min-h-[480px] rounded-xl border border-white/10 bg-[#1c1c1c] p-5">
+      {/* CHAPTER */}
       <h2 className="text-[17px] font-semibold">
         {index + 1}. {planner.subject}
       </h2>
 
+      {/* PROGRESS */}
       <div className="mt-4 flex items-center gap-3">
-        <span className="min-w-[45px] text-sm">{progress}.0%</span>
+        <span className="min-w-[45px] text-sm">{progress}%</span>
 
         <div className="h-1 flex-1 rounded-full bg-[#373737]">
           <div
@@ -535,32 +785,78 @@ const ChapterCard = ({
         </div>
       </div>
 
-      <div className="mt-5 space-y-2.5">
-        {tasks.map((task, taskIndex) => (
-          <label
-            key={task._id || `${planner._id}-task-${taskIndex}`}
-            className="flex cursor-pointer items-center gap-2.5 text-sm"
-          >
-            <input
-              type="checkbox"
-              checked={Boolean(task.completed)}
-              onChange={(e) =>
-                toggleTask(planner._id, task._id, e.target.checked)
-              }
-              className="h-4 w-4"
-            />
+      {/* TASKS */}
+      <div className="mt-5 space-y-3">
+        {tasks.map((task, taskIndex) => {
+          const status = getStatusInfo(task);
 
-            <span
-              className={
-                task.completed ? "text-gray-500 line-through" : "text-gray-300"
-              }
+          return (
+            <div
+              key={task._id || `${planner._id}-task-${taskIndex}`}
+              className="rounded-lg border border-white/10 bg-[#111111] p-3"
             >
-              {task.name}
-            </span>
-          </label>
-        ))}
+              {/* TASK NAME + STATUS */}
+              <div className="flex items-start justify-between gap-2">
+                <span
+                  className={`text-sm ${
+                    status.label === "Completed"
+                      ? "text-gray-500 line-through"
+                      : "text-gray-300"
+                  }`}
+                >
+                  {task.name}
+                </span>
+
+                <span
+                  className={`shrink-0 rounded-md px-2 py-1 text-[11px] ${status.className}`}
+                >
+                  {status.label}
+                </span>
+              </div>
+
+              {/* DATE */}
+              <div className="mt-2 text-xs text-gray-500">
+                📅 {formatTaskDate(task.date)}
+              </div>
+
+              {/* STATUS CONTROLS */}
+              <div className="mt-3 flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateTaskStatus(planner._id, task._id, "pending")
+                  }
+                  className="rounded-md bg-white/5 px-2 py-1 text-[10px] text-gray-400 hover:bg-white/10"
+                >
+                  Pending
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateTaskStatus(planner._id, task._id, "half")
+                  }
+                  className="rounded-md bg-yellow-500/10 px-2 py-1 text-[10px] text-yellow-400 hover:bg-yellow-500/20"
+                >
+                  Half
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateTaskStatus(planner._id, task._id, "completed")
+                  }
+                  className="rounded-md bg-green-500/10 px-2 py-1 text-[10px] text-green-400 hover:bg-green-500/20"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
+      {/* SUBJECT */}
       <div className="mt-6">
         <span
           className={`rounded-md px-2.5 py-1 text-xs ${
@@ -577,11 +873,12 @@ const ChapterCard = ({
         </span>
       </div>
 
+      {/* ACTIONS */}
       <div className="mt-5 flex gap-2">
         <button
           type="button"
           onClick={() => openEditModal(planner)}
-          className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/60 hover:cursor-pointer active:scale-[95%]"
+          className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/20"
         >
           Edit
         </button>
@@ -589,7 +886,7 @@ const ChapterCard = ({
         <button
           type="button"
           onClick={() => deletePlanner(planner._id)}
-          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/20 hover:cursor-pointer active:scale-[95%]"
+          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/20"
         >
           Delete
         </button>

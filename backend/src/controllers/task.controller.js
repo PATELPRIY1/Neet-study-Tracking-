@@ -35,10 +35,6 @@ const createTask = async (req, res) => {
   }
 };
 
-
-// ==============================
-// GET ALL TASKS / CHAPTERS
-// ==============================
 const getTasks = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -61,10 +57,6 @@ const getTasks = async (req, res) => {
   }
 };
 
-
-// ==============================
-// GET SINGLE TASK / CHAPTER
-// ==============================
 const getTaskById = async (req, res) => {
   try {
     const userId = req.user.id;
