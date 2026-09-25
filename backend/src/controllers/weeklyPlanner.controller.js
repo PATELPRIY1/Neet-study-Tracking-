@@ -5,7 +5,7 @@ const getPlanner = async (req, res) => {
   try {
     const planners = await WeeklyPlanner.find({
       user: req.user.id,
-    }).sort({ weekStart: 1 });
+    }).sort({ createdAt: 1 });
 
     res.status(200).json({
       planners,
