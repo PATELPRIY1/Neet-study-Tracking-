@@ -69,7 +69,6 @@ const WeeklyPlanner = () => {
   const initialWeek = calculateWeekDates("This week");
 
   const [search, setSearch] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -244,20 +243,9 @@ const WeeklyPlanner = () => {
       });
     }
 
-    // =========================
-    // SORT
-    // =========================
-    result.sort((a, b) => {
-      const titleA = a.title?.toLowerCase() || "";
-      const titleB = b.title?.toLowerCase() || "";
-
-      return sortOrder === "asc"
-        ? titleA.localeCompare(titleB)
-        : titleB.localeCompare(titleA);
-    });
 
     return result;
-  }, [planners, subject, weekFilter, search, sortOrder]);
+  }, [planners, subject, weekFilter, search]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -484,16 +472,6 @@ const WeeklyPlanner = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center justify-between gap-3 border-b border-white/10 px-6 py-4">
             <div className="flex items-center gap-2">
-              <button
-                className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10"
-                onClick={() =>
-                  setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
-                }
-                title={sortOrder === "asc" ? "Ascending" : "Descending"}
-              >
-                <ArrowUpDown size={18} />
-                <span>{sortOrder === "asc" ? "A → Z" : "Z → A"}</span>
-              </button>
 
               <div className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10">
                 <Search size={18} />
