@@ -86,8 +86,17 @@ const AddTask = () => {
       return;
     }
 
-    if (taskNames.some((task) => !task.name.trim() || !task.date)) {
+    if (taskNames.some((task) => !task.name.trim())) {
       alert("Please enter a task name and date for every task.");
+      return;
+    }
+
+    const newTaskWithoutDate = taskNames.some(
+      (task) => !task._id && !task.date,
+    );
+
+    if (newTaskWithoutDate) {
+      alert("Please enter a date for every new task.");
       return;
     }
 
@@ -100,7 +109,7 @@ const AddTask = () => {
         tasks: taskNames.map((task) => ({
           ...(task._id && { _id: task._id }),
           name: task.name.trim(),
-          date: task.date,
+          date: task.date || null,
           status: task.status || "pending",
         })),
       };
