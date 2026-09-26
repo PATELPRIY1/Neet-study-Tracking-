@@ -77,11 +77,6 @@ const AddTask = () => {
       return;
     }
 
-    if (!formData.date) {
-      alert("Please select a date.");
-      return;
-    }
-
     try {
       setCreating(true);
 
