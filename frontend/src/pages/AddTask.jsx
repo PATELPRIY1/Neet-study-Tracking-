@@ -767,12 +767,10 @@ const ChapterCard = ({
 
   return (
     <div className="min-h-[480px] rounded-xl border border-white/10 bg-[#1c1c1c] p-5">
-      {/* CHAPTER */}
       <h2 className="text-[17px] font-semibold">
         {index + 1}. {planner.subject}
       </h2>
 
-      {/* PROGRESS */}
       <div className="mt-4 flex items-center gap-3">
         <span className="min-w-[45px] text-sm">{progress}%</span>
 
@@ -784,9 +782,12 @@ const ChapterCard = ({
             }}
           />
         </div>
+
+        <div className="mt-2 text-xs text-gray-500">
+          📅 {formatTaskDate(task.date)}
+        </div>
       </div>
 
-      {/* TASKS */}
       <div className="mt-5 space-y-3">
         {tasks.map((task, taskIndex) => {
           const status = getStatusInfo(task);
@@ -813,11 +814,6 @@ const ChapterCard = ({
                 >
                   {status.label}
                 </span>
-              </div>
-
-              {/* DATE */}
-              <div className="mt-2 text-xs text-gray-500">
-                📅 {formatTaskDate(task.date)}
               </div>
 
               {/* STATUS CONTROLS */}
