@@ -86,11 +86,6 @@ const AddTask = () => {
       return;
     }
 
-    if (taskNames.some((task) => !task.name.trim())) {
-      alert("Please enter a task name and date for every task.");
-      return;
-    }
-
     const newTaskWithoutDate = taskNames.some(
       (task) => !task._id && !task.date,
     );
