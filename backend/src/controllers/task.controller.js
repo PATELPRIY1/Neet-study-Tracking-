@@ -1,12 +1,11 @@
 const taskModel = require("../models/task.model");
 
 // ==============================
-// CREATE TASK / CHAPTER
+// CREATE CHAPTER
 // ==============================
 const createTask = async (req, res) => {
   try {
-    const { subject, tasks } = req.body;
-
+    const { subject, date, tasks } = req.body;
     const userId = req.user.id;
 
     if (!subject) {
@@ -15,9 +14,16 @@ const createTask = async (req, res) => {
       });
     }
 
+    if (!date) {
+      return res.status(400).json({
+        message: "Date is required",
+      });
+    }
+
     const task = await taskModel.create({
       userId,
       subject,
+      date,
       tasks: Array.isArray(tasks) ? tasks : [],
     });
 
@@ -35,6 +41,9 @@ const createTask = async (req, res) => {
   }
 };
 
+// ==============================
+// GET ALL CHAPTERS
+// ==============================
 const getTasks = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -57,6 +66,9 @@ const getTasks = async (req, res) => {
   }
 };
 
+// ==============================
+// GET CHAPTER BY ID
+// ==============================
 const getTaskById = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -87,16 +99,15 @@ const getTaskById = async (req, res) => {
   }
 };
 
-
 // ==============================
-// UPDATE TASK / CHAPTER
+// UPDATE CHAPTER
 // ==============================
 const updateTasks = async (req, res) => {
   try {
     const userId = req.user.id;
     const taskId = req.params.id;
 
-    const { title, subject, tasks } = req.body;
+    const { subject, date, tasks } = req.body;
 
     const task = await taskModel.findOne({
       _id: taskId,
@@ -109,12 +120,12 @@ const updateTasks = async (req, res) => {
       });
     }
 
-    if (title !== undefined) {
-      task.title = title.trim();
-    }
-
     if (subject !== undefined) {
       task.subject = subject;
+    }
+
+    if (date !== undefined) {
+      task.date = date;
     }
 
     if (Array.isArray(tasks)) {
@@ -124,19 +135,18 @@ const updateTasks = async (req, res) => {
     await task.save();
 
     res.status(200).json({
-      message: "Task updated successfully",
+      message: "Chapter updated successfully",
       planner: task,
     });
   } catch (error) {
     console.error("Update task error:", error);
 
     res.status(500).json({
-      message: "Error updating task",
+      message: "Error updating chapter",
       error: error.message,
     });
   }
 };
-
 
 // ==============================
 // UPDATE NESTED TASK STATUS
@@ -146,7 +156,20 @@ const updateTaskStatus = async (req, res) => {
     const userId = req.user.id;
 
     const { plannerId, taskId } = req.params;
-    const { completed } = req.body;
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      "pending",
+      "half",
+      "completed",
+      "missed",
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        message: "Invalid task status",
+      });
+    }
 
     const taskDoc = await taskModel.findOne({
       _id: plannerId,
@@ -155,7 +178,7 @@ const updateTaskStatus = async (req, res) => {
 
     if (!taskDoc) {
       return res.status(404).json({
-        message: "Planner not found",
+        message: "Chapter not found",
       });
     }
 
@@ -167,7 +190,10 @@ const updateTaskStatus = async (req, res) => {
       });
     }
 
-    nestedTask.completed = Boolean(completed);
+    nestedTask.status = status;
+
+    // Keep old completed field synchronized
+    nestedTask.completed = status === "completed";
 
     await taskDoc.save();
 
@@ -185,9 +211,8 @@ const updateTaskStatus = async (req, res) => {
   }
 };
 
-
 // ==============================
-// DELETE SINGLE TASK / CHAPTER
+// DELETE CHAPTER
 // ==============================
 const deleteTasks = async (req, res) => {
   try {
@@ -218,9 +243,8 @@ const deleteTasks = async (req, res) => {
   }
 };
 
-
 // ==============================
-// DELETE ALL TASKS
+// DELETE ALL CHAPTERS
 // ==============================
 const deleteAllTasks = async (req, res) => {
   try {
@@ -242,7 +266,6 @@ const deleteAllTasks = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   createTask,

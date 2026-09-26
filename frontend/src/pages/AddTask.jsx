@@ -1,14 +1,7 @@
 // ...existing code...
 
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  ChevronDown,
-  Search,
-  ArrowUpDown,
-  Plus,
-  X,
-  Trash2,
-} from "lucide-react";
+import { ChevronDown, Search, Plus, X, Trash2 } from "lucide-react";
 
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -17,12 +10,10 @@ import api from "../api/axios";
 const DEFAULT_TASKS = [
   {
     name: "Notes Rev",
-    date: "",
     status: "pending",
   },
   {
     name: "NCERT Rev",
-    date: "",
     status: "pending",
   },
 ];
@@ -59,7 +50,6 @@ const AddTask = () => {
       ...prev,
       {
         name,
-        date: "",
         status: "pending",
       },
     ]);
@@ -87,12 +77,8 @@ const AddTask = () => {
       return;
     }
 
-    const newTaskWithoutDate = taskNames.some(
-      (task) => !task._id && !task.date,
-    );
-
-    if (newTaskWithoutDate) {
-      alert("Please enter a date for every new task.");
+    if (!formData.date) {
+      alert("Please select a date.");
       return;
     }
 
@@ -101,12 +87,15 @@ const AddTask = () => {
 
       const data = {
         subject: formData.subject,
-        date: task.date || null,
+        date: formData.date,
 
         tasks: taskNames.map((task) => ({
           ...(task._id && { _id: task._id }),
           name: task.name.trim(),
-          status: task.status || "pending",
+
+          // Keep old completed data working
+          status:
+            task.status || (task.completed === true ? "completed" : "pending"),
         })),
       };
 
@@ -179,6 +168,7 @@ const AddTask = () => {
 
   const updateTaskStatus = async (plannerId, taskId, status) => {
     try {
+      // Update UI immediately
       setPlanners((previous) =>
         previous.map((planner) => {
           if (planner._id !== plannerId) {
@@ -192,6 +182,7 @@ const AddTask = () => {
                 ? {
                     ...task,
                     status,
+                    completed: status === "completed",
                   }
                 : task,
             ),
@@ -199,6 +190,7 @@ const AddTask = () => {
         }),
       );
 
+      // Update database
       await api.patch(`/api/task/${plannerId}/task/${taskId}`, {
         status,
       });
@@ -208,6 +200,7 @@ const AddTask = () => {
         error.response?.data || error,
       );
 
+      // Restore database data if API fails
       fetchPlanner();
     }
   };
@@ -273,6 +266,7 @@ const AddTask = () => {
 
     setFormData({
       subject: planner.subject || "Physics",
+
       date: planner.date
         ? new Date(planner.date).toISOString().split("T")[0]
         : "",
@@ -284,7 +278,8 @@ const AddTask = () => {
             _id: task._id,
             name: task.name,
 
-            // Keep old status data
+            // New status system
+            // Old completed:true data is also supported
             status:
               task.status ||
               (task.completed === true ? "completed" : "pending"),
@@ -465,7 +460,7 @@ const AddTask = () => {
 
                   <div>
                     <label className="mb-2 block text-sm text-gray-300">
-                      Task Date
+                      Chapter Date
                     </label>
 
                     <input
@@ -656,7 +651,8 @@ const ChapterCard = ({
   const tasks = Array.isArray(planner.tasks) ? planner.tasks : [];
 
   const getEffectiveStatus = (task) => {
-    if (task.status === "completed") {
+    // Keep old completed data working
+    if (task.status === "completed" || task.completed === true) {
       return "completed";
     }
 
@@ -664,17 +660,18 @@ const ChapterCard = ({
       return "half";
     }
 
-    if (!task.date) {
+    // No chapter date = cannot be missed
+    if (!planner.date) {
       return "pending";
     }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const taskDate = new Date(task.date);
-    taskDate.setHours(0, 0, 0, 0);
+    const chapterDate = new Date(planner.date);
+    chapterDate.setHours(0, 0, 0, 0);
 
-    if (taskDate < today) {
+    if (chapterDate < today) {
       return "missed";
     }
 
@@ -749,6 +746,10 @@ const ChapterCard = ({
         {index + 1}. {planner.subject}
       </h2>
 
+      <div className="mt-2 text-xs text-gray-500">
+        📅 {formatChapterDate(planner.date)}
+      </div>
+
       <div className="mt-4 flex items-center gap-3">
         <span className="min-w-[45px] text-sm">{progress}%</span>
 
@@ -759,10 +760,6 @@ const ChapterCard = ({
               width: `${progress}%`,
             }}
           />
-        </div>
-
-        <div className="mt-2 text-xs text-gray-500">
-          📅 {formatChapterDate(planner.date)}
         </div>
       </div>
 
