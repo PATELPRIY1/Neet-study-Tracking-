@@ -29,6 +29,7 @@ const DEFAULT_TASKS = [
 
 const EMPTY_FORM = {
   subject: "Physics",
+  date: "",
 };
 
 const AddTask = () => {
@@ -100,11 +101,11 @@ const AddTask = () => {
 
       const data = {
         subject: formData.subject,
+        date: task.date || null,
 
         tasks: taskNames.map((task) => ({
           ...(task._id && { _id: task._id }),
           name: task.name.trim(),
-          date: task.date || null,
           status: task.status || "pending",
         })),
       };
@@ -176,55 +177,38 @@ const AddTask = () => {
     }));
   };
 
-  const updateTaskStatus = async (req, res) => {
+  const updateTaskStatus = async (plannerId, taskId, status) => {
     try {
-      const userId = req.user.id;
+      setPlanners((previous) =>
+        previous.map((planner) => {
+          if (planner._id !== plannerId) {
+            return planner;
+          }
 
-      const { plannerId, taskId } = req.params;
-      const { status } = req.body;
+          return {
+            ...planner,
+            tasks: planner.tasks.map((task) =>
+              task._id === taskId
+                ? {
+                    ...task,
+                    status,
+                  }
+                : task,
+            ),
+          };
+        }),
+      );
 
-      const allowedStatuses = ["pending", "half", "completed", "missed"];
-
-      if (!allowedStatuses.includes(status)) {
-        return res.status(400).json({
-          message: "Invalid task status",
-        });
-      }
-
-      const taskDoc = await taskModel.findOne({
-        _id: plannerId,
-        userId,
-      });
-
-      if (!taskDoc) {
-        return res.status(404).json({
-          message: "Planner not found",
-        });
-      }
-
-      const nestedTask = taskDoc.tasks.id(taskId);
-
-      if (!nestedTask) {
-        return res.status(404).json({
-          message: "Checklist task not found",
-        });
-      }
-
-      nestedTask.status = status;
-
-      await taskDoc.save();
-
-      res.status(200).json({
-        message: "Task status updated successfully",
-        planner: taskDoc,
+      await api.patch(`/api/task/${plannerId}/task/${taskId}`, {
+        status,
       });
     } catch (error) {
-      console.error("Update task status error:", error);
+      console.error(
+        "Failed to update task status:",
+        error.response?.data || error,
+      );
 
-      res.status(500).json({
-        message: "Error updating task status",
-        error: error.message,
-      });
+      fetchPlanner();
     }
   };
 
@@ -289,6 +273,9 @@ const AddTask = () => {
 
     setFormData({
       subject: planner.subject || "Physics",
+      date: planner.date
+        ? new Date(planner.date).toISOString().split("T")[0]
+        : "",
     });
 
     setTaskNames(
@@ -296,10 +283,11 @@ const AddTask = () => {
         ? planner.tasks.map((task) => ({
             _id: task._id,
             name: task.name,
-            date: task.date
-              ? new Date(task.date).toISOString().split("T")[0]
-              : "",
-            status: task.status || "pending",
+
+            // Keep old status data
+            status:
+              task.status ||
+              (task.completed === true ? "completed" : "pending"),
           }))
         : [],
     );
@@ -475,26 +463,16 @@ const AddTask = () => {
                     </select>
                   </div>
 
-                  <div className="mt-3">
-                    <label className="mb-1 block text-xs text-gray-400">
+                  <div>
+                    <label className="mb-2 block text-sm text-gray-300">
                       Task Date
                     </label>
 
                     <input
                       type="date"
-                      value={task.date || ""}
-                      onChange={(e) =>
-                        setTaskNames((prev) =>
-                          prev.map((item, taskIndex) =>
-                            taskIndex === index
-                              ? {
-                                  ...item,
-                                  date: e.target.value,
-                                }
-                              : item,
-                          ),
-                        )
-                      }
+                      name="date"
+                      value={formData.date}
+                      onChange={handleInputChange}
                       className="w-full rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none"
                     />
                   </div>
@@ -748,7 +726,7 @@ const ChapterCard = ({
       ? 0
       : Math.round(((completedCount + halfCount * 0.5) / totalTasks) * 100);
 
-  const formatTaskDate = (dateValue) => {
+  const formatChapterDate = (dateValue) => {
     if (!dateValue) return "No date";
 
     const date = new Date(dateValue);
@@ -784,7 +762,7 @@ const ChapterCard = ({
         </div>
 
         <div className="mt-2 text-xs text-gray-500">
-          📅 {formatTaskDate(task.date)}
+          📅 {formatChapterDate(planner.date)}
         </div>
       </div>
 

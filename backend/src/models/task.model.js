@@ -7,16 +7,16 @@ const plannerTaskSchema = new mongoose.Schema(
       required: true,
     },
 
-    date: {
-      type: Date,
-      required: false,
-      default: null,
-    },
-
     status: {
       type: String,
       enum: ["pending", "half", "completed", "missed"],
       default: "pending",
+    },
+
+    // Keep this temporarily so old data is not lost
+    completed: {
+      type: Boolean,
+      default: false,
     },
   },
   { _id: true },
@@ -34,6 +34,12 @@ const taskSchema = new mongoose.Schema(
       type: String,
       enum: ["Physics", "Chemistry", "Botany", "Zoology"],
       required: true,
+    },
+
+    // ONE DATE FOR THE WHOLE CHAPTER
+    date: {
+      type: Date,
+      default: null,
     },
 
     tasks: [plannerTaskSchema],
