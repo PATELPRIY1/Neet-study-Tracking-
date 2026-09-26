@@ -1,11 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  ChevronDown,
-  Search,
-  Plus,
-  X,
-  Trash2,
-} from "lucide-react";
+import { ChevronDown, Search, Plus, X, Trash2 } from "lucide-react";
 
 import api from "../api/axios";
 
@@ -189,16 +183,10 @@ const WeeklyPlanner = () => {
 
     let result = [...safePlanners];
 
-    // =========================
-    // SUBJECT FILTER
-    // =========================
     if (subject !== "All") {
       result = result.filter((planner) => planner.subject === subject);
     }
 
-    // =========================
-    // WEEK FILTER
-    // =========================
     if (weekFilter !== "All weeks") {
       const targetWeek = calculateWeekDates(weekFilter);
 
@@ -222,8 +210,6 @@ const WeeklyPlanner = () => {
           return false;
         }
 
-        // Show planner if its date range overlaps
-        // the selected calendar week.
         return plannerStart <= filterEnd && plannerEnd >= filterStart;
       });
     }
@@ -241,7 +227,6 @@ const WeeklyPlanner = () => {
         return title.includes(searchText) || subjectName.includes(searchText);
       });
     }
-
 
     return result;
   }, [planners, subject, weekFilter, search]);
@@ -471,7 +456,6 @@ const WeeklyPlanner = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center justify-between gap-3 border-b border-white/10 px-6 py-4">
             <div className="flex items-center gap-2">
-
               <div className="rounded-lg bg-(--bg-transparent-2-color) backdrop-blur-[14px] backdrop-saturate-150 border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.4),inset_0_-2px_6px_rgba(0,0,0,0.2)] focus:outline-2 focus:outline-(--secondary-color) flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-white/10">
                 <Search size={18} />
                 <input
@@ -517,13 +501,13 @@ const WeeklyPlanner = () => {
               onChange={(e) => setWeekFilter(e.target.value)}
               className="rounded-lg border-none bg-[#193b5c] px-4 py-2 text-sm text-[#55aaff] outline-none"
             >
+              <option value="All weeks">All weeks</option>
+              
               <option value="This week">This week</option>
 
               <option value="Next week">Next week</option>
 
               <option value="Previous week">Previous week</option>
-
-              <option value="All weeks">All weeks</option>
             </select>
           </div>
         </div>
@@ -821,9 +805,6 @@ const ChapterCard = ({
         </div>
       </div>
 
-      {/* =========================
-          CHECKLIST
-      ========================= */}
       <div className="mt-5 space-y-2.5">
         {tasks.map((task, taskIndex) => (
           <label
@@ -850,9 +831,6 @@ const ChapterCard = ({
         ))}
       </div>
 
-      {/* =========================
-          SUBJECT
-      ========================= */}
       <div className="mt-6">
         <span
           className={`rounded-md px-2.5 py-1 text-xs ${
@@ -869,16 +847,10 @@ const ChapterCard = ({
         </span>
       </div>
 
-      {/* =========================
-          DATE RANGE
-      ========================= */}
       <div className="mt-3 text-sm text-gray-300">
         {startDate} → {endDate}
       </div>
 
-      {/* =========================
-          ACTIONS
-      ========================= */}
       <div className="mt-5 flex gap-2">
         <button
           type="button"

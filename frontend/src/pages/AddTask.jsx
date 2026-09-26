@@ -475,6 +475,30 @@ const AddTask = () => {
                     </select>
                   </div>
 
+                  <div className="mt-3">
+                    <label className="mb-1 block text-xs text-gray-400">
+                      Task Date
+                    </label>
+
+                    <input
+                      type="date"
+                      value={task.date || ""}
+                      onChange={(e) =>
+                        setTaskNames((prev) =>
+                          prev.map((item, taskIndex) =>
+                            taskIndex === index
+                              ? {
+                                  ...item,
+                                  date: e.target.value,
+                                }
+                              : item,
+                          ),
+                        )
+                      }
+                      className="w-full rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none"
+                    />
+                  </div>
+
                   <div>
                     <div className="mb-3 flex items-center justify-between">
                       <label className="text-sm text-gray-300">
@@ -493,7 +517,6 @@ const AddTask = () => {
                             key={`${task._id || "new"}-${index}`}
                             className="rounded-lg border border-white/10 bg-[#111111] p-3"
                           >
-                            {/* TASK NAME */}
                             <div className="flex items-center gap-2">
                               <input
                                 type="text"
@@ -523,32 +546,6 @@ const AddTask = () => {
                               </button>
                             </div>
 
-                            {/* DATE */}
-                            <div className="mt-3">
-                              <label className="mb-1 block text-xs text-gray-400">
-                                Task Date
-                              </label>
-
-                              <input
-                                type="date"
-                                value={task.date || ""}
-                                onChange={(e) =>
-                                  setTaskNames((prev) =>
-                                    prev.map((item, taskIndex) =>
-                                      taskIndex === index
-                                        ? {
-                                            ...item,
-                                            date: e.target.value,
-                                          }
-                                        : item,
-                                    ),
-                                  )
-                                }
-                                className="w-full rounded-lg border border-white/10 bg-[#111111] px-3 py-2 text-white outline-none"
-                              />
-                            </div>
-
-                            {/* STATUS */}
                             <div className="mt-3">
                               <label className="mb-2 block text-xs text-gray-400">
                                 Status
