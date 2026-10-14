@@ -726,15 +726,17 @@ const ChapterCard = ({
 
   return (
     <div className="min-h-[480px] rounded-xl border border-white/10 bg-[#1c1c1c] p-5">
-      <h2 className="text-[17px] font-semibold">
-        {index + 1}. {planner.subject}
-      </h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-[17px] font-semibold">
+          {index + 1}. {planner.subject}
+        </h2>
 
-      {allTasksCompleted && (
-        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-green-500/30 bg-green-500/15 px-2 py-1 text-xs font-medium text-green-400">
-          ✓ Completed
-        </span>
-      )}
+        {allTasksCompleted && (
+          <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-green-500/30 bg-green-500/15 px-2 py-1 text-xs font-medium text-green-400">
+            ✓ Completed
+          </span>
+        )}
+      </div>
 
       <div className="mt-2 text-xs text-gray-500">
         📅 {formatChapterDate(planner.date)}
