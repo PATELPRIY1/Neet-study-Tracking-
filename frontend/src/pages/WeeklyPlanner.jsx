@@ -228,7 +228,37 @@ const WeeklyPlanner = () => {
       });
     }
 
-    return result;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const currentWeekStart = getStartOfWeek(today);
+
+    return result.sort((a, b) => {
+      const startA = parseLocalDate(formatDateInput(new Date(a.weekStart)));
+      const startB = parseLocalDate(formatDateInput(new Date(b.weekStart)));
+
+      if (!startA && !startB) return 0;
+      if (!startA) return 1;
+      if (!startB) return -1;
+
+      const isCurrentA = startA.getTime() === currentWeekStart.getTime();
+      const isCurrentB = startB.getTime() === currentWeekStart.getTime();
+
+      // 1. Current week's cards first
+      if (isCurrentA && !isCurrentB) return -1;
+      if (!isCurrentA && isCurrentB) return 1;
+
+      // 2. Upcoming weeks, nearest first
+      const isFutureA = startA > currentWeekStart;
+      const isFutureB = startB > currentWeekStart;
+
+      if (isFutureA && isFutureB) return startA - startB;
+      if (isFutureA) return -1;
+      if (isFutureB) return 1;
+
+      // 3. Previous weeks, most recent first
+      return startB - startA;
+    });
   }, [planners, subject, weekFilter, search]);
 
   const handleInputChange = (e) => {
@@ -756,6 +786,8 @@ const ChapterCard = ({
   const tasks = Array.isArray(planner.tasks) ? planner.tasks : [];
 
   const completedCount = tasks.filter((task) => task.completed).length;
+  const allTasksCompleted =
+    tasks.length > 0 && tasks.every((task) => task.completed);
   const totalTasks = tasks.length;
 
   const progress =
