@@ -725,7 +725,7 @@ const ChapterCard = ({
   };
 
   return (
-    <div className="flex items-start justify-between gap-3">
+    <div className="min-h-[480px] rounded-xl border border-white/10 bg-[#1c1c1c] p-5">
       <h2 className="text-[17px] font-semibold">
         {index + 1}. {planner.subject}
       </h2>
@@ -735,6 +735,124 @@ const ChapterCard = ({
           ✓ Completed
         </span>
       )}
+
+      <div className="mt-2 text-xs text-gray-500">
+        📅 {formatChapterDate(planner.date)}
+      </div>
+
+      <div className="mt-4 flex items-center gap-3">
+        <span className="min-w-[45px] text-sm">{progress}%</span>
+
+        <div className="h-1 flex-1 rounded-full bg-[#373737]">
+          <div
+            className="h-full rounded-full bg-[#4caf7d] transition-all"
+            style={{
+              width: `${progress}%`,
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-5 space-y-3">
+        {tasks.map((task, taskIndex) => {
+          const status = getStatusInfo(task);
+
+          return (
+            <div
+              key={task._id || `${planner._id}-task-${taskIndex}`}
+              className="rounded-lg border border-white/10 bg-[#111111] p-3"
+            >
+              {/* TASK NAME + STATUS */}
+              <div className="flex items-start justify-between gap-2">
+                <span
+                  className={`text-sm ${
+                    status.label === "Completed"
+                      ? "text-gray-500 line-through"
+                      : "text-gray-300"
+                  }`}
+                >
+                  {task.name}
+                </span>
+
+                <span
+                  className={`shrink-0 rounded-md px-2 py-1 text-[11px] ${status.className}`}
+                >
+                  {status.label}
+                </span>
+              </div>
+
+              {/* STATUS CONTROLS */}
+              <div className="mt-3 flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateTaskStatus(planner._id, task._id, "pending")
+                  }
+                  className="rounded-md bg-white/5 px-2 py-1 text-[10px] text-gray-400 hover:bg-white/10"
+                >
+                  Pending
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateTaskStatus(planner._id, task._id, "half")
+                  }
+                  className="rounded-md bg-yellow-500/10 px-2 py-1 text-[10px] text-yellow-400 hover:bg-yellow-500/20"
+                >
+                  Half
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateTaskStatus(planner._id, task._id, "completed")
+                  }
+                  className="rounded-md bg-green-500/10 px-2 py-1 text-[10px] text-green-400 hover:bg-green-500/20"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* SUBJECT */}
+      <div className="mt-6">
+        <span
+          className={`rounded-md px-2.5 py-1 text-xs ${
+            planner.subject === "Physics"
+              ? "bg-[#225b8b]"
+              : planner.subject === "Chemistry"
+                ? "bg-[#80651b]"
+                : planner.subject === "Botany"
+                  ? "bg-[#286044]"
+                  : "bg-[#67427a]"
+          }`}
+        >
+          {planner.subject}
+        </span>
+      </div>
+
+      {/* ACTIONS */}
+      <div className="mt-5 flex gap-2">
+        <button
+          type="button"
+          onClick={() => openEditModal(planner)}
+          className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm text-gray-300 transition hover:bg-white/20"
+        >
+          Edit
+        </button>
+
+        <button
+          type="button"
+          onClick={() => deletePlanner(planner._id)}
+          className="rounded-lg px-3 py-2 text-sm text-red-400 transition hover:bg-red-500/20"
+        >
+          Delete
+        </button>
+      </div>
     </div>
   );
 };
