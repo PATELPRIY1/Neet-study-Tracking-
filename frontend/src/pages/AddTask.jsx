@@ -282,17 +282,40 @@ const AddTask = () => {
       });
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     return result.sort((a, b) => {
-      // Chapters without dates appear last.
-      if (!a.date && !b.date) {
-        return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
-      }
+      const dateA = a.date ? new Date(a.date) : null;
+      const dateB = b.date ? new Date(b.date) : null;
 
-      if (!a.date) return 1;
-      if (!b.date) return -1;
+      if (dateA) dateA.setHours(0, 0, 0, 0);
+      if (dateB) dateB.setHours(0, 0, 0, 0);
 
-      // Earliest chapter date first.
-      return new Date(a.date) - new Date(b.date);
+      // 1. Today's chapters first
+      const isTodayA = dateA && dateA.getTime() === today.getTime();
+      const isTodayB = dateB && dateB.getTime() === today.getTime();
+
+      if (isTodayA && !isTodayB) return -1;
+      if (!isTodayA && isTodayB) return 1;
+
+      // 2. Upcoming chapters next, earliest date first
+      const isFutureA = dateA && dateA > today;
+      const isFutureB = dateB && dateB > today;
+
+      if (isFutureA && isFutureB) return dateA - dateB;
+      if (isFutureA) return -1;
+      if (isFutureB) return 1;
+
+      // 3. Past chapters after today's and upcoming chapters,
+      // latest past date first
+      if (dateA && dateB) return dateB - dateA;
+
+      // 4. Chapters without dates last
+      if (dateA) return -1;
+      if (dateB) return 1;
+
+      return 0;
     });
   }, [planners, subject, search]);
 
