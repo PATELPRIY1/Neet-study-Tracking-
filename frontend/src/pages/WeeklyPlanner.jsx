@@ -502,7 +502,7 @@ const WeeklyPlanner = () => {
               className="rounded-lg border-none bg-[#193b5c] px-4 py-2 text-sm text-[#55aaff] outline-none"
             >
               <option value="All weeks">All weeks</option>
-              
+
               <option value="This week">This week</option>
 
               <option value="Next week">Next week</option>
@@ -788,6 +788,12 @@ const ChapterCard = ({
       <h2 className="text-[17px] font-semibold">
         {index + 1}. {planner.title}
       </h2>
+
+      {allTasksCompleted && (
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-green-500/30 bg-green-500/15 px-2 py-1 text-xs font-medium text-green-400">
+          ✓ Completed
+        </span>
+      )}
 
       {/* =========================
           PROGRESS
